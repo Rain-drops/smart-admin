@@ -15,14 +15,14 @@ export default {
     text: String,
     subtext: String
   },
-  mounted() {
+  mounted () {
     this.initChart();
   },
   methods: {
-    resize() {
+    resize () {
       this.dom.resize();
     },
-    initChart() {
+    initChart () {
       this.$nextTick(() => {
         let xAxisData = Object.keys(this.value);
         let seriesData = Object.values(this.value);

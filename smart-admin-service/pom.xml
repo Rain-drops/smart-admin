@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${smartadmin.springboot.version}</version>
+                <version>2.2.5.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -294,9 +294,9 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${smartadmin.springboot.version}</version>
+                    <version>2.2.5.RELEASE</version>
                     <configuration>
-                        <mainClass>${main-class}</mainClass>
+                        <mainClass>net.lab1024.smartadmin.SmartAdminApplication</mainClass>
                     </configuration>
                     <executions>
                         <execution>

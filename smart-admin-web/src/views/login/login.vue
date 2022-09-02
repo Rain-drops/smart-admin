@@ -12,7 +12,7 @@
       <div class="form-con">
         <login-form @on-success-valid="handleSubmit"></login-form>
       </div>
-      <footer class="center footerDesc">SmartAdmin 由1024创新实验室强力驱动</footer>
+      <footer class="center footerDesc">SmartAdmin</footer>
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
     LoginForm
   },
   data () {
-    return {}
+    return {};
   },
   computed: {},
   watch: {},

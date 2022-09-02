@@ -10,7 +10,7 @@ import config from '@/config';
 
 const { homeName } = config;
 
-Vue.use(Router); 
+Vue.use(Router);
 const router = new Router({
   // routes: routers,
   routes: buildRouters(routers)
@@ -78,7 +78,7 @@ router.beforeEach((to, from, next) => {
       return;
     }
 
-    //如果是超管，直接放行
+    // 如果是超管，直接放行
     if (store.state.user.userLoginInfo.isSuperMan) {
       next();
       return;
@@ -106,7 +106,7 @@ router.afterEach(to => {
 function buildRouters (routerArray) {
   let lineRouters = [];
   for (let routerItem of routerArray) {
-    //如果是顶层菜单
+    // 如果是顶层菜单
     if (routerItem.meta.topMenu) {
       // for (let children of routerItem.children) {
       let lineRouterArray = convertRouterTree2Line(routerItem.children);

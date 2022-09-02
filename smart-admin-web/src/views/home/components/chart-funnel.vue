@@ -15,14 +15,14 @@ export default {
     text: String,
     subtext: String
   },
-  mounted() {
+  mounted () {
     this.initChart();
   },
   methods: {
-    resize() {
+    resize () {
       this.dom.resize();
     },
-    initChart() {
+    initChart () {
       this.$nextTick(() => {
         let legend = this.value.map(_ => _.name);
         let option = {

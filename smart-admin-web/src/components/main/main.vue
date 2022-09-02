@@ -118,13 +118,13 @@ export default {
     User,
     ABackTop
   },
-  data() {
+  data () {
     return {
-      //是否加载完了权限
-      isLoadedPrvileges:false,
-      //用户所拥有的顶级菜单数组
+      // 是否加载完了权限
+      isLoadedPrvileges: false,
+      // 用户所拥有的顶级菜单数组
       userTopMenuArray: [],
-      //当前顶级菜单名字
+      // 当前顶级菜单名字
       currentTopMenuName: '',
       currentTopMenuTitle: '',
       // 是否折叠
@@ -274,7 +274,7 @@ export default {
         this.$refs.sideMenu.updateActiveName(this.$route.name);
         this.jumpRouter();
         this.$Spin.hide();
-        
+
       } else {
         //如果页面刷新，需要重新获取权限
         (async () => {
@@ -372,7 +372,7 @@ export default {
           //验证权限
         if (this.$store.state.user.privilegeMenuKeyList.indexOf(router.name) ===-1) {
           continue;
-        }  
+        }
 
         //过滤非菜单
         if (!router.meta.hideInMenu) {
