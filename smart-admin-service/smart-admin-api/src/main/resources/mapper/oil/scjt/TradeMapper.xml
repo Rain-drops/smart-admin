@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.smartadmin.module.oil.scjt.dao.TradeDao">
+
+    <resultMap id="CarInOutNumVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumVO"></resultMap>
+    <resultMap id="CarInOutNumExcelVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumExcelVO"></resultMap>
+
+    <resultMap id="TradeVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.TradeVO"></resultMap>
+
+    <resultMap id="MatchRatioVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchRatioVO"></resultMap>
+
+    <select id="queryByPage" resultMap="TradeVO">
+        SELECT
+            *
+        FROM
+            fullingdb.bus_tradelog
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND endtime <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND endtime <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+            <if test="queryDTO.billNo != null and queryDTO.billNo != ''">
+                AND billNo = #{queryDTO.billNo}
+            </if>
+            <if test="queryDTO.nozzleNo != null and queryDTO.nozzleNo != ''">
+                AND nozzleno = #{queryDTO.nozzleNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryMatchRatio" resultMap="MatchRatioVO">
+        SELECT
+            COUNT( distinct endtime) total_deal,
+            SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match
+        FROM
+        fullingdb.bus_tradelog
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND endtime <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND endtime <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+            <if test="queryDTO.billNo != null and queryDTO.billNo != ''">
+                AND billNo = #{queryDTO.billNo}
+            </if>
+            <if test="queryDTO.nozzleNo != null and queryDTO.nozzleNo != ''">
+                AND nozzleno = #{queryDTO.nozzleNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCarInOutNum" resultMap="CarInOutNumVO">
+        SELECT
+            carnumber, count( key1 ) frequency
+        FROM
+            (
+            SELECT
+                DISTINCT carnumber, endtime, key1
+            FROM
+                (
+                SELECT
+                    carnumber, date( date_add( endtime, INTERVAL 8 HOUR ) ) endtime, CONCAT( carnumber, ' ', date( date_add( endtime, INTERVAL 8 HOUR ) ) ) key1
+                FROM
+                    fullingdb.bus_tradelog
+                WHERE
+                    <if test="queryDTO.startTime != null">
+                        endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+                    </if>
+                    <if test="queryDTO.endTime != null">
+                        endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+                    </if>
+                    <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                        station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+                    </if>
+                    <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                        station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+                    </if>
+                    <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                        carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+                    </if>
+                    ASCII( carnumber ) > 127
+                ) a
+            ) b
+        GROUP BY carnumber
+        <if test="queryDTO.minFrequency != null and queryDTO.minFrequency != '' and queryDTO.maxFrequency != null and queryDTO.maxFrequency != ''">
+            HAVING COUNT( key1 ) <![CDATA[ >= ]]> #{queryDTO.minFrequency} AND COUNT( key1 ) <![CDATA[ <= ]]> #{queryDTO.maxFrequency}
+        </if>
+
+    </select>
+
+</mapper>

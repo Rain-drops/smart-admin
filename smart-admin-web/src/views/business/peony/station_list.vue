@@ -4,31 +4,13 @@
       <!------ 查询条件第一行 begin------->
       <Row class="smart-query-form-row">
         <span>
-          选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
+          站点名称 : <Input placeholder="请输入站点名称" style="width: 180px" v-model="queryForm.stationName"/>
         </span>
-        <span>
-          出入次数 :
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
-          ~~
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
-        </span>
-        <span>
-          车牌归属地 :
-          <Input placeholder="请选择省份" style="width: 180px" v-model="queryForm.kind"/>
-          ~~
-          <Input placeholder="请选择地区" style="width: 180px" v-model="queryForm.kind"/>
-        </span>
-        <span>
-          车牌号 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.name"/>
-        </span>
-
         <ButtonGroup>
           <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
           <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
         </ButtonGroup>
       </Row>
-      <!------ 查询条件第一行 begin------->
-
     </Card>
 
     <Card class="warp-card">
@@ -40,6 +22,7 @@
                 icon="ios-download-outline" size="small" type="warning" v-privilege="'peony-list-batch-export'">批量导出</Button>
       </Row>
       <!-------操作按钮行 end------->
+
       <!-------表格列表 begin------->
       <Table row-key="id" :columns="mainTable.columnArray" :data="mainTable.data" :loading="mainTable.loading"
              @on-sort-change="handleSortChange" border highlight-row ref="mainTable">
@@ -67,14 +50,13 @@
 </template>
 
 <script>
-import { dateTimeRangeConvert } from '@/lib/util';
 import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
-import { peonyApi } from '@/api/peony';
+import { oilApi } from '@/api/scjt-oil';
 import PeonyListForm from './components/peony-list-form';
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'StationList',
   components: {
     PeonyListForm
   },
@@ -109,28 +91,60 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
-        baseData: {
-          "deal_num": "100",
-          "match_num": "90",
-          "match_ratio": "90%"
-        },
         // 表格数据
         data: [
           {
-            "car_number":"川EF48V5",
-            "in_out_num": "102"
+            "id":1,
+            "stationCode": "MB0P",
+            "stationName": "下八庙右站",
+            "stationStatus": "正常",
+            "stationAreaName": "川中片区",
+            "stationExpName":"巴南高速",
+            "stationExpServiceArea":"下八庙加油站",
+            "lastDeal":"",
+            "stationIp":"10.97.210.129"
           }
         ],
         // 表格列
         columnArray: [
           {
-            title: '车牌',
-            key: 'car_number',
+            title: '序号',
+            key: 'id',
             align: 'center'
           },
           {
-            title: '出入次数',
-            key: 'in_out_num',
+            title: '站点编号',
+            key: 'stationCode',
+            align: 'center'
+          },
+          {
+            title: '站点名称',
+            key: 'stationName',
+            align: 'center'
+          },
+          {
+            title: '片区',
+            key: 'stationAreaName',
+            align: 'center'
+          },
+          {
+            title: '高速',
+            key: 'stationExpName',
+            align: 'center'
+          },
+          {
+            title: '服务区',
+            key: 'stationExpServiceArea',
+            align: 'center'
+          },
+          {
+            title: 'IP',
+            key: 'stationIp',
+            align: 'center'
+          },
+          {
+            title: '最新交易记录',
+            key: 'lastDel',
             align: 'center'
           }
         ]
@@ -169,21 +183,21 @@ export default {
     },
     // 查询
     async queryList () {
-      // this.mainTable.loading = true;
-      // try {
-      //   let params = this.convertQueryParam();
-      //   let result = await peonyApi.queryPeony(params);
-      //   this.mainTable.data = result.data.list;
-      //   this.mainTablePage.total = result.data.total;
-      // } finally {
-      //   this.mainTable.loading = false;
-      // }
+      this.mainTable.loading = true;
+      try {
+        let params = this.convertQueryParam();
+        let result = await oilApi.getStationList(params);
+        this.mainTable.data = result.data.list;
+        this.mainTablePage.total = result.data.total;
+      } finally {
+        this.mainTable.loading = false;
+      }
     },
     // 重置查询
     resetQueryList () {
       let pageSize = this.queryForm.pageSize;
       this.queryForm = {
-        station_name: null,
+        stationName: null,
         pageNum: 1,
         pageSize: pageSize,
         orders: []
@@ -237,7 +251,7 @@ export default {
       try {
         this.allExportBtnLoading = true;
         let params = this.convertQueryParam();
-        await peonyApi.exportAll(params);
+        await oilApi.exportAll(params);
       } catch (e) {
         console.log(e);
       } finally {
@@ -251,7 +265,7 @@ export default {
       }
       try {
         this.batchExportBtnLoading = true;
-        await peonyApi.batchExport(this.mainTableSelectArray.map(e => e.id));
+        await oilApi.batchExport(this.mainTableSelectArray.map(e => e.id));
       } catch (e) {
         console.log(e);
       } finally {

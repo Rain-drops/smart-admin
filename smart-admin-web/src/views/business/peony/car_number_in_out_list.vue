@@ -4,22 +4,22 @@
       <!------ 查询条件第一行 begin------->
       <Row class="smart-query-form-row">
         <span>
-          选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
+          选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="daterange" v-model="queryForm.selectTimeRange"/>
         </span>
         <span>
           出入次数 :
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
+          <Input placeholder="请输入" style="width: 180px" v-model="queryForm.minFrequency"/>
           ~~
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
+          <Input placeholder="请输入" style="width: 180px" v-model="queryForm.maxFrequency"/>
         </span>
         <span>
           车牌归属地 :
-          <Input placeholder="请选择省份" style="width: 180px" v-model="queryForm.kind"/>
+          <Input placeholder="请选择省份" style="width: 180px" v-model="queryForm.carProvince"/>
           ~~
-          <Input placeholder="请选择地区" style="width: 180px" v-model="queryForm.kind"/>
+          <Input placeholder="请选择地区" style="width: 180px" v-model="queryForm.carCity"/>
         </span>
         <span>
-          车牌号 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.name"/>
+          车牌号 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.carNumber"/>
         </span>
 
         <ButtonGroup>
@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import { dateTimeRangeConvert } from '@/lib/util';
-import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
-import { peonyApi } from '@/api/peony';
+import {PAGE_SIZE_OPTIONS} from '@/constants/table-page';
+import {oilApi} from '@/api/scjt-oil';
 import PeonyListForm from './components/peony-list-form';
+import {dateTimeRangeConvert} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
@@ -91,8 +91,14 @@ export default {
       /* -------------------------查询条件相关数据-------------------- */
       // 搜索表单
       queryForm: {
-        // ID
-        station_name: null,
+        selectTimeRange: ['', ''],
+        stationCode: null,
+        stationName: null,
+        carProvince: null,
+        carCity: null,
+        carNumber: null,
+        minFrequency: null,
+        maxFrequency: null,
         pageNum: 1,
         pageSize: PAGE_SIZE_INIT,
         orders: []
@@ -109,28 +115,23 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
-        baseData: {
-          "deal_num": "100",
-          "match_num": "90",
-          "match_ratio": "90%"
-        },
         // 表格数据
         data: [
           {
-            "car_number":"川EF48V5",
-            "in_out_num": "102"
+            "carnumber":"川EF48V5",
+            "frequency": "102"
           }
         ],
         // 表格列
         columnArray: [
           {
             title: '车牌',
-            key: 'car_number',
+            key: 'carnumber',
             align: 'center'
           },
           {
             title: '出入次数',
-            key: 'in_out_num',
+            key: 'frequency',
             align: 'center'
           }
         ]
@@ -162,28 +163,47 @@ export default {
   methods: {
     /* -------------------------查询相关 begin------------------------- */
     convertQueryParam () {
-
+      let startTime = '';
+      let endTime = '';
+      let carNumber = '';
+      let timeRange = dateTimeRangeConvert(this.queryForm.selectTimeRange);
+      if (timeRange != null && timeRange != undefined) {
+        startTime = timeRange[0];
+        endTime = timeRange[1];
+      }
+      if (this.queryForm.carProvince != null && this.queryForm.carProvince != undefined && this.queryForm.carProvince != '') {
+        carNumber = this.queryForm.carProvince;
+      }
+      if (this.queryForm.carCity != null && this.queryForm.carCity != undefined && this.queryForm.carCity != '') {
+        carNumber += this.queryForm.carCity;
+      }
+      if (this.queryForm.carNumber != null && this.queryForm.carNumber != undefined && this.queryForm.carNumber != '') {
+        carNumber = this.queryForm.carNumber;
+      }
       return {
-        ...this.queryForm
+        ...this.queryForm,
+        startTime: startTime,
+        endTime: endTime,
+        carNumber: carNumber
       };
     },
     // 查询
     async queryList () {
-      // this.mainTable.loading = true;
-      // try {
-      //   let params = this.convertQueryParam();
-      //   let result = await peonyApi.queryPeony(params);
-      //   this.mainTable.data = result.data.list;
-      //   this.mainTablePage.total = result.data.total;
-      // } finally {
-      //   this.mainTable.loading = false;
-      // }
+      this.mainTable.loading = true;
+      try {
+        let params = this.convertQueryParam();
+        let result = await oilApi.getInOutNumList(params);
+        this.mainTable.data = result.data.list;
+        this.mainTablePage.total = result.data.total;
+      } finally {
+        this.mainTable.loading = false;
+      }
     },
     // 重置查询
     resetQueryList () {
       let pageSize = this.queryForm.pageSize;
       this.queryForm = {
-        station_name: null,
+        stationName: null,
         pageNum: 1,
         pageSize: pageSize,
         orders: []
@@ -237,7 +257,7 @@ export default {
       try {
         this.allExportBtnLoading = true;
         let params = this.convertQueryParam();
-        await peonyApi.exportAll(params);
+        await oilApi.exportAll(params);
       } catch (e) {
         console.log(e);
       } finally {
@@ -251,7 +271,7 @@ export default {
       }
       try {
         this.batchExportBtnLoading = true;
-        await peonyApi.batchExport(this.mainTableSelectArray.map(e => e.id));
+        await oilApi.batchExport(this.mainTableSelectArray.map(e => e.id));
       } catch (e) {
         console.log(e);
       } finally {

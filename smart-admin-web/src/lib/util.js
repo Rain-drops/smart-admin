@@ -495,6 +495,10 @@ export const utils = {
   }
 };
 
+export const dateTimeConvert = (timerange) => {
+  // timerange
+  return moment(timerange).format("YYYY-MM-DD 00:00:00")
+}
 
 export const dateTimeRangeConvert = (timerange) => {
   // timerange

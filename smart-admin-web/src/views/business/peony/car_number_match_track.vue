@@ -7,28 +7,22 @@
           选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
         </span>
         <span>
-          出入次数 :
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
-          ~~
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
+          片区名称 : <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
         </span>
         <span>
-          车牌归属地 :
-          <Input placeholder="请选择省份" style="width: 180px" v-model="queryForm.kind"/>
-          ~~
-          <Input placeholder="请选择地区" style="width: 180px" v-model="queryForm.kind"/>
+          线路名称 : <Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.kind"/>
         </span>
         <span>
-          车牌号 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.name"/>
+          站组名称 : <Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.name"/>
         </span>
-
+        <span>
+          站点名称 : <Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.color"/>
+        </span>
         <ButtonGroup>
           <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
           <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
         </ButtonGroup>
       </Row>
-      <!------ 查询条件第一行 begin------->
-
     </Card>
 
     <Card class="warp-card">
@@ -40,6 +34,7 @@
                 icon="ios-download-outline" size="small" type="warning" v-privilege="'peony-list-batch-export'">批量导出</Button>
       </Row>
       <!-------操作按钮行 end------->
+
       <!-------表格列表 begin------->
       <Table row-key="id" :columns="mainTable.columnArray" :data="mainTable.data" :loading="mainTable.loading"
              @on-sort-change="handleSortChange" border highlight-row ref="mainTable">
@@ -109,29 +104,91 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
-        baseData: {
-          "deal_num": "100",
-          "match_num": "90",
-          "match_ratio": "90%"
-        },
         // 表格数据
         data: [
           {
-            "car_number":"川EF48V5",
-            "in_out_num": "102"
+            "id":1,
+            "station_code": "MB0P",
+            "station_name": "下八庙右站",
+            "deal_num": "32",
+            "match_num": "25"
           }
         ],
         // 表格列
         columnArray: [
           {
-            title: '车牌',
-            key: 'car_number',
+            title: '序号',
+            key: 'id',
             align: 'center'
           },
           {
-            title: '出入次数',
-            key: 'in_out_num',
+            title: '站点编号',
+            key: 'station_code',
             align: 'center'
+          },
+          {
+            title: '站点名称',
+            key: 'station_name',
+            align: 'center',
+            render: (h, params) => {
+              return h("span", {
+                on: {
+                  click: () => {
+                    alert("---")
+                  }
+                },
+                style:{
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }
+              }, params.row.station_name);
+            }
+          },
+          {
+            title: '交易笔数',
+            key: 'deal_num',
+            align: 'center'
+          },
+          {
+            title: '匹配车牌',
+            key: 'match_num',
+            align: 'center'
+          },
+          {
+            title: '匹配率',
+            key: 'match_ratio',
+            align: 'center',
+            render: (h, params) => {
+              return h("span", {
+                on: {
+                  click: () => {
+                    alert("---")
+                  }
+                },
+                style:{
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }
+              }, params.row.deal_num === "0" || params.row.deal_num === 0 ? 0 :parseFloat(params.row.match_num/params.row.deal_num).toFixed(2) + "%");
+            }
+          },
+          {
+            title: '车牌矫正',
+            key: 'car_revise',
+            align: 'center',
+            render: (h, params) => {
+              return h("span", {
+                on: {
+                  click: () => {
+                    alert("---")
+                  }
+                },
+                style:{
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }
+              }, '车牌矫正');
+            }
           }
         ]
       }

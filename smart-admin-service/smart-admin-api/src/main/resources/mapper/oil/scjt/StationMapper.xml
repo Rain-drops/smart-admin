@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.smartadmin.module.oil.scjt.dao.StationDao">
+
+    <resultMap id="StationVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationVO"></resultMap>
+    <resultMap id="StationExcelVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationExcelVO"></resultMap>
+
+
+    <select id="queryByPage" resultMap="StationVO">
+        select
+            id,
+            station_name,
+            station_code,
+            station_status,
+            station_ip,
+            splate_ip,
+            nvr_ip,
+            sys_user,
+            sys_pwd,
+            content,
+            longitude,
+            latitude,
+            station_area_name,
+            station_exp_name,
+            station_exp_service_area
+        from station_list
+        <where>
+            <if test="queryDTO.id != null">
+                AND id = #{queryDTO.id}
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

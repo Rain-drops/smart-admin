@@ -7,31 +7,60 @@
           选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
         </span>
         <span>
-          出入次数 :
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
-          ~~
-          <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
+          片区名称 : <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.stationAreaName"/>
         </span>
         <span>
-          车牌归属地 :
-          <Input placeholder="请选择省份" style="width: 180px" v-model="queryForm.kind"/>
-          ~~
-          <Input placeholder="请选择地区" style="width: 180px" v-model="queryForm.kind"/>
+          线路名称 : <Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.stationExpName"/>
         </span>
         <span>
-          车牌号 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.name"/>
+          站组名称 : <Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.stationExpServiceArea"/>
+        </span>
+        <span>
+          站点名称 : <Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.stationName"/>
         </span>
 
         <ButtonGroup>
           <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
           <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
         </ButtonGroup>
+        <Button
+          @click="showMoreQueryConditionFlag = !showMoreQueryConditionFlag"
+          icon="md-more"
+          style="margin-left: 20px"
+          type="primary"
+          v-privilege="'peony-list-query'"
+        >{{showMoreQueryConditionFlag?'隐藏':'展开'}}</Button>
       </Row>
       <!------ 查询条件第一行 begin------->
-
+      <!------ 查询条件第二行 begin------->
+      <Row class="smart-query-form-row" v-show="showMoreQueryConditionFlag">
+        <span>
+          支付票号 : <Input placeholder="请输入支付票号" style="width: 180px" v-model="queryForm.billNo"/>
+        </span>
+        <span>
+          油品号 : <Input placeholder="请选择油品号" style="width: 180px" v-model="queryForm.oilCode"/>
+        </span>
+        <span>
+          车牌属地 : <Input placeholder="请选择车牌属地" style="width: 180px" v-model="queryForm.carNumber"/>
+        </span>
+      </Row>
+      <!------ 查询条件第二行 end------->
     </Card>
 
     <Card class="warp-card">
+      <!-------       start------->
+      <div style="display: flex; margin-bottom: 10px">
+        <div style="width: 20%;  height: 100px; line-height: 100px; font-size:2vw; background-color: darkgrey">
+          <span style="margin-left: 10px"> 交易笔数: {{ mainTable.baseData.totalDeal }} </span>
+        </div>
+        <div style="width: 20%; height: 100px; line-height: 100px; font-size:2vw; margin-left: 10px; background-color: darkseagreen">
+          <span style="margin-left: 10px"> 交易匹配数: {{ mainTable.baseData.isMatch }} </span>
+        </div>
+        <div style="width: 20%; height: 100px; line-height: 100px; font-size:2vw; margin-left: 10px; background-color: darkkhaki">
+          <span style="margin-left: 10px"> 匹配率: {{ mainTable.baseData.matchRatio }} % </span>
+        </div>
+      </div>
+      <!-------         end------->
       <!-------操作按钮行 begin------->
       <Row class="marginBottom10">
         <Button :loading="allExportBtnLoading" @click="exportAll" class="marginLeft10 float-right"
@@ -66,11 +95,13 @@
   </div>
 </template>
 
+
 <script>
-import { dateTimeRangeConvert } from '@/lib/util';
-import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
-import { peonyApi } from '@/api/peony';
+import {PAGE_SIZE_OPTIONS} from '@/constants/table-page';
+import {oilApi} from '@/api/scjt-oil';
 import PeonyListForm from './components/peony-list-form';
+import {dateTimeConvert, dateTimeRangeConvert} from "@/lib/util";
+import moment from "moment/moment";
 
 const PAGE_SIZE_INIT = 20;
 export default {
@@ -91,8 +122,16 @@ export default {
       /* -------------------------查询条件相关数据-------------------- */
       // 搜索表单
       queryForm: {
-        // ID
-        station_name: null,
+        selectTime: null,
+        startTime: null,
+        endTime: null,
+        stationAreaName: null,
+        stationExpName: null,
+        stationExpServiceArea: null,
+        stationName: null,
+        billNo: null,
+        oilCode: null,
+        carNumber: null,
         pageNum: 1,
         pageSize: PAGE_SIZE_INIT,
         orders: []
@@ -110,27 +149,88 @@ export default {
         // 加载中
         loading: false,
         baseData: {
-          "deal_num": "100",
-          "match_num": "90",
-          "match_ratio": "90%"
+          "totalDeal": 100,
+          "isMatch": 90,
+          "matchRatio": "90"
         },
         // 表格数据
         data: [
           {
-            "car_number":"川EF48V5",
-            "in_out_num": "102"
+            "id":1,
+            "stationCode": "MB0P",
+            "stationAreaName": "川中片区",
+            "stationExpName":"巴南高速",
+            "stationExpServiceArea":"下八庙加油站",
+            "stationName": "下八庙右站",
+            "endtime":"2023-02-07 19:20:48",
+            "billno":"802433",
+            "oilcode":"92号",
+            "nozzleno":"3",
+            "volume":"36.19",
+            "price":"7.24",
+            "carnumber":"川EF48V5"
           }
         ],
         // 表格列
         columnArray: [
           {
-            title: '车牌',
-            key: 'car_number',
+            title: '序号',
+            key: 'id',
             align: 'center'
           },
           {
-            title: '出入次数',
-            key: 'in_out_num',
+            title: '片区',
+            key: 'stationAreaName',
+            align: 'center'
+          },
+          {
+            title: '高速线路',
+            key: 'stationExpName',
+            align: 'center'
+          },
+          {
+            title: '站组',
+            key: 'stationExpServiceArea',
+            align: 'center'
+          },
+          {
+            title: '站点名称',
+            key: 'stationName',
+            align: 'center'
+          },
+          {
+            title: '挂枪时间',
+            key: 'endtime',
+            align: 'center'
+          },
+          {
+            title: '支付票号',
+            key: 'billno',
+            align: 'center'
+          },
+          {
+            title: '油品号',
+            key: 'oilcode',
+            align: 'center'
+          },
+          {
+            title: '油枪号',
+            key: 'nozzleno',
+            align: 'center'
+          },
+          {
+            title: '加油量',
+            key: 'volume',
+            align: 'center'
+          },
+          {
+            title: '交易金额',
+            key: 'price',
+            align: 'center'
+          },
+          {
+            title: '车牌号',
+            key: 'carnumber',
             align: 'center'
           }
         ]
@@ -163,27 +263,55 @@ export default {
     /* -------------------------查询相关 begin------------------------- */
     convertQueryParam () {
 
+      let startTime = null; let endTime = null;
+      if (this.queryForm.selectTime != null && this.queryForm.selectTime != undefined && this.queryForm.selectTime != ''){
+        let selectTime = dateTimeConvert(this.queryForm.selectTime)
+        startTime = selectTime;
+        let date = new Date(this.queryForm.selectTime);
+        endTime = dateTimeConvert(date.setDate(date.getDate() + 1));
+      }
+      console.log(startTime)
+      console.log(endTime)
+
       return {
-        ...this.queryForm
+        ...this.queryForm,
+        startTime: startTime,
+        endTime: endTime
       };
     },
     // 查询
     async queryList () {
-      // this.mainTable.loading = true;
-      // try {
-      //   let params = this.convertQueryParam();
-      //   let result = await peonyApi.queryPeony(params);
-      //   this.mainTable.data = result.data.list;
-      //   this.mainTablePage.total = result.data.total;
-      // } finally {
-      //   this.mainTable.loading = false;
-      // }
+      this.mainTable.loading = true;
+      try {
+        let params = this.convertQueryParam();
+        let result = await oilApi.getTradeList(params);
+        this.mainTable.data = result.data.list;
+        this.mainTablePage.total = result.data.total;
+      } finally {
+        this.mainTable.loading = false;
+      }
+      try {
+        let params = this.convertQueryParam();
+        let result = await oilApi.getMatchRatio(params);
+        this.mainTable.baseData = result.data;
+      } finally {
+
+      }
     },
     // 重置查询
     resetQueryList () {
       let pageSize = this.queryForm.pageSize;
       this.queryForm = {
-        station_name: null,
+        selectTime: null,
+        startTime: null,
+        endTime: null,
+        stationAreaName: null,
+        stationExpName: null,
+        stationExpServiceArea: null,
+        stationName: null,
+        billNo: null,
+        oilCode: null,
+        carNumber: null,
         pageNum: 1,
         pageSize: pageSize,
         orders: []
@@ -237,7 +365,7 @@ export default {
       try {
         this.allExportBtnLoading = true;
         let params = this.convertQueryParam();
-        await peonyApi.exportAll(params);
+        await oilApi.exportAll(params);
       } catch (e) {
         console.log(e);
       } finally {
@@ -251,7 +379,7 @@ export default {
       }
       try {
         this.batchExportBtnLoading = true;
-        await peonyApi.batchExport(this.mainTableSelectArray.map(e => e.id));
+        await oilApi.batchExport(this.mainTableSelectArray.map(e => e.id));
       } catch (e) {
         console.log(e);
       } finally {
