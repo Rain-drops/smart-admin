@@ -7,16 +7,32 @@
           选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
         </span>
         <span>
-          片区名称 : <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.stationAreaName"/>
+          片区名称 :
+          <!--<Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.stationAreaName"/>-->
+          <Select v-model="queryForm.stationAreaName" style="width:200px" @on-change="getSecond">
+            <Option v-for="item in mainTable.stationLinkageMenu_1" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          线路名称 : <Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.stationExpName"/>
+          线路名称 :
+          <!--<Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.stationExpName"/>-->
+          <Select v-model="queryForm.stationExpName" style="width:200px" @on-change="getThird">
+            <Option v-for="item in mainTable.stationLinkageMenu_2" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          站组名称 : <Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.stationExpServiceArea"/>
+          站组名称 :
+          <!--<Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.stationExpServiceArea"/>-->
+          <Select v-model="queryForm.stationExpServiceArea" style="width:200px" @on-change="getFourth">
+            <Option v-for="item in mainTable.stationLinkageMenu_3" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          站点名称 : <Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.stationName"/>
+          站点名称 :
+          <!--<Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.stationName"/>-->
+          <Select v-model="queryForm.stationName" style="width:200px" >
+            <Option v-for="item in mainTable.stationLinkageMenu_4" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
 
         <ButtonGroup>
@@ -154,6 +170,10 @@ export default {
           "l3": {"川南":[{"label":""}], "川北":[{"label":""}]},
           "l4": {"川南":[{"label":""}], "川北":[{"label":""}]}
         },
+        stationLinkageMenu_1:[{"label":"川南"}, {"label":"川北"}],
+        stationLinkageMenu_2:{"川南":[{"label":""}], "川北":[{"label":""}]},
+        stationLinkageMenu_3:{"川南":[{"label":""}], "川北":[{"label":""}]},
+        stationLinkageMenu_4:{"川南":[{"label":""}], "川北":[{"label":""}]},
         baseData: {
           "totalDeal": 100,
           "isMatch": 90,
@@ -320,6 +340,15 @@ export default {
         this.mainTable.stationLinkageMenu = result.data;
       } finally {
       }
+    },
+    getSecond (val) {
+      this.mainTable.stationLinkageMenu_2 = this.mainTable.stationLinkageMenu.l2[val]
+    },
+    getThird (val) {
+      this.mainTable.stationLinkageMenu_3 = this.mainTable.stationLinkageMenu.l3[val]
+    },
+    getFourth (val) {
+      this.mainTable.stationLinkageMenu_4 = this.mainTable.stationLinkageMenu.l4[val]
     },
     // 重置查询
     resetQueryList () {
