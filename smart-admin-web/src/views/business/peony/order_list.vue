@@ -54,7 +54,11 @@
           支付票号 : <Input placeholder="请输入支付票号" style="width: 180px" v-model="queryForm.billNo"/>
         </span>
         <span>
-          油品号 : <Input placeholder="请选择油品号" style="width: 180px" v-model="queryForm.oilCode"/>
+          油品号 :
+          <!--<Input placeholder="请选择油品号" style="width: 180px" v-model="queryForm.oilCode"/>-->
+          <Select v-model="queryForm.oilCode" style="width:200px" >
+            <Option v-for="item in mainTable.oilCodeMenu" :value="item.oilCode" :key="item.oilCode">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
           车牌属地 : <Input placeholder="请选择车牌属地" style="width: 180px" v-model="queryForm.carNumber"/>
@@ -164,16 +168,22 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
+        stationLinkageMenu_1:[],
+        stationLinkageMenu_2:[],
+        stationLinkageMenu_3:[],
+        stationLinkageMenu_4:[],
         stationLinkageMenu: {
           "l1": [{"label":"川南"}, {"label":"川北"}],
           "l2": {"川南":[{"label":""}], "川北":[{"label":""}]},
           "l3": {"川南":[{"label":""}], "川北":[{"label":""}]},
           "l4": {"川南":[{"label":""}], "川北":[{"label":""}]}
         },
-        stationLinkageMenu_1:[{"label":"川南"}, {"label":"川北"}],
-        stationLinkageMenu_2:{"川南":[{"label":""}], "川北":[{"label":""}]},
-        stationLinkageMenu_3:{"川南":[{"label":""}], "川北":[{"label":""}]},
-        stationLinkageMenu_4:{"川南":[{"label":""}], "川北":[{"label":""}]},
+        oilCodeMenu: [
+          {"oilCode":"0号", "label":"0号"},
+          {"oilCode":"92", "label":"92号"},
+          {"oilCode":"95", "label":"95号"},
+          {"oilCode":"98", "label":"98号"}
+        ],
         baseData: {
           "totalDeal": 100,
           "isMatch": 90,
@@ -193,7 +203,7 @@ export default {
             "oilcode":"92号",
             "nozzleno":"3",
             "volume":"36.19",
-            "price":"7.24",
+            "realamount":"7.24",
             "carnumber":"川EF48V5"
           }
         ],
@@ -251,7 +261,7 @@ export default {
           },
           {
             title: '交易金额',
-            key: 'price',
+            key: 'realamount',
             align: 'center'
           },
           {
@@ -267,7 +277,6 @@ export default {
   watch: {},
   filters: {},
   created () {
-    this.queryStationCascadingMenu();
   },
   mounted () {
     this.queryList();
@@ -309,6 +318,7 @@ export default {
       try {
         this.queryTradeList();
         this.queryMatchRatio();
+        this.queryStationCascadingMenu();
       } finally {
         this.mainTable.loading = false;
       }
@@ -338,8 +348,38 @@ export default {
         let param = { pageNum: 1, pageSize: 10000 };
         let result = await oilApi.getStationLinkageMenu(param);
         this.mainTable.stationLinkageMenu = result.data;
+        this.initStationLinkageMenu();
       } finally {
       }
+    },
+    initStationLinkageMenu(){
+      let t = this;
+      let menu = this.mainTable.stationLinkageMenu;
+      this.mainTable.stationLinkageMenu_1 = menu.l1
+
+      let l2 = [];
+      Object.entries(menu.l2).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l2.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_2 = l2;
+
+      let l3 = [];
+      Object.entries(menu.l3).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l3.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_3 = l3;
+
+      let l4 = [];
+      Object.entries(menu.l4).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l4.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_4 = l4;
     },
     getSecond (val) {
       this.mainTable.stationLinkageMenu_2 = this.mainTable.stationLinkageMenu.l2[val]
@@ -369,6 +409,7 @@ export default {
         orders: []
       };
       this.queryList();
+      this.initStationLinkageMenu();
     },
     // 修改页码
     changeMainTablePagePageNum (pageNum) {

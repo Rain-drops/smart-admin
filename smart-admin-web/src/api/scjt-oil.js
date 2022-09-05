@@ -17,7 +17,9 @@ export const oilApi = {
   getInOutNumList: (data) => {
     return postAxios('/oil/trade/inoutnum/page/query', data);
   },
-
+  getMatchTrackList: (data) => {
+    return postAxios('/oil/trade/matchtrack/page/query', data);
+  },
 
 
 

@@ -11,23 +11,10 @@ export const peony = [
     },
     children: [
       {
-        path: '/peony/car_number_in_out_list',
-        name: 'CarNumberInOutList',
-        meta: {
-          title: '车牌出入站频次',
-          privilege: [
-            { title: '查询', name: 'peony-list-query' },
-            { title: '批量导出', name: 'peony-list-batch-export' },
-            { title: '导出全部', name: 'peony-list-export-all' }
-          ]
-        },
-        component: () => import('@/views/business/peony/car_number_in_out_list.vue')
-      },
-      {
         path: '/peony/station_list',
         name: 'StationList',
         meta: {
-          title: '站点状态',
+          title: '站点状态(无下钻)',
           privilege: [
             { title: '查询', name: 'peony-list-query' },
             { title: '批量导出', name: 'peony-list-batch-export' },
@@ -37,10 +24,23 @@ export const peony = [
         component: () => import('@/views/business/peony/station_list.vue')
       },
       {
+        path: '/peony/car_number_in_out_list',
+        name: 'CarNumberInOutList',
+        meta: {
+          title: '车牌出入站频次(无下钻)',
+          privilege: [
+            { title: '查询', name: 'peony-list-query' },
+            { title: '批量导出', name: 'peony-list-batch-export' },
+            { title: '导出全部', name: 'peony-list-export-all' }
+          ]
+        },
+        component: () => import('@/views/business/peony/car_number_in_out_list.vue')
+      },
+      {
         path: '/peony/order_list',
         name: 'OrderList',
         meta: {
-          title: '车辆明细查询',
+          title: '车辆明细查询(无下钻)',
           privilege: [
             { title: '查询', name: 'peony-list-query' },
             { title: '批量导出', name: 'peony-list-batch-export' },
@@ -76,6 +76,19 @@ export const peony = [
         component: () => import('@/views/business/peony/car_number_revise.vue')
       },
       {
+        path: '/peony/car_number_trace',
+        name: 'PeonyList',
+        meta: {
+          title: '车牌跟踪',
+          privilege: [
+            { title: '查询', name: 'peony-list-query' },
+            { title: '批量导出', name: 'peony-list-batch-export' },
+            { title: '导出全部', name: 'peony-list-export-all' }
+          ]
+        },
+        component: () => import('@/views/business/peony/peony-list.vue')
+      },
+      {
         path: '/peony/growth_analyse',
         name: 'GrowthAnalyseList',
         meta: {
@@ -87,19 +100,6 @@ export const peony = [
           ]
         },
         component: () => import('@/views/business/peony/growth_analyse.vue')
-      },
-      {
-        path: '/peony/car_number_trace',
-        name: 'PeonyList',
-        meta: {
-          title: '车牌追踪',
-          privilege: [
-            { title: '查询', name: 'peony-list-query' },
-            { title: '批量导出', name: 'peony-list-batch-export' },
-            { title: '导出全部', name: 'peony-list-export-all' }
-          ]
-        },
-        component: () => import('@/views/business/peony/peony-list.vue')
       }
     ]
   }

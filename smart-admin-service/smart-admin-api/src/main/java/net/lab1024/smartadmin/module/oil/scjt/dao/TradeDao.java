@@ -7,10 +7,7 @@ import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.entity.StationEntity;
 import net.lab1024.smartadmin.module.oil.scjt.domain.entity.TradeEntity;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchRatioVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.TradeVO;
+import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -44,5 +41,13 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @return
      */
     MatchRatioVO queryMatchRatio(@Param("queryDTO") TradeQueryDTO queryDTO);
+
+    /**
+     * 加油站车辆识别情况跟踪
+     * @param page
+     * @param queryDTO
+     * @return
+     */
+    IPage<MatchTrackVO> queryMatchTrackByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
 
 }

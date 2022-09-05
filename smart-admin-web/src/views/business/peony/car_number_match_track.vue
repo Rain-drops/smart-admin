@@ -7,16 +7,28 @@
           选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="date" v-model="queryForm.selectTime"/>
         </span>
         <span>
-          片区名称 : <Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.id"/>
+          片区名称 :
+          <Select v-model="queryForm.stationAreaName" style="width:200px" clearable filterable @on-change="getSecond">
+            <Option v-for="item in mainTable.stationLinkageMenu_1" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          线路名称 : <Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.kind"/>
+          线路名称 :
+          <Select v-model="queryForm.stationExpName" style="width:200px" clearable filterable @on-change="getThird">
+            <Option v-for="item in mainTable.stationLinkageMenu_2" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          站组名称 : <Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.name"/>
+          站组名称 :
+          <Select v-model="queryForm.stationExpServiceArea" style="width:200px" clearable filterable @on-change="getFourth">
+            <Option v-for="item in mainTable.stationLinkageMenu_3" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <span>
-          站点名称 : <Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.color"/>
+          站点名称 :
+          <Select v-model="queryForm.stationName" style="width:200px" clearable filterable multiple>
+            <Option v-for="item in mainTable.stationLinkageMenu_4" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
         <ButtonGroup>
           <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
@@ -62,10 +74,10 @@
 </template>
 
 <script>
-import { dateTimeRangeConvert } from '@/lib/util';
 import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
-import { peonyApi } from '@/api/peony';
 import PeonyListForm from './components/peony-list-form';
+import {oilApi} from "@/api/scjt-oil";
+import {dateTimeConvert} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
@@ -87,7 +99,13 @@ export default {
       // 搜索表单
       queryForm: {
         // ID
-        station_name: null,
+        selectTime: null,
+        startTime: null,
+        endTime: null,
+        stationAreaName: null,
+        stationExpName: null,
+        stationExpServiceArea: null,
+        stationName: null,
         pageNum: 1,
         pageSize: PAGE_SIZE_INIT,
         orders: []
@@ -104,83 +122,100 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
+        stationLinkageMenu_1:[],
+        stationLinkageMenu_2:[],
+        stationLinkageMenu_3:[],
+        stationLinkageMenu_4:[],
+        stationLinkageMenu: {
+          "l1": [{"label":"川南"}, {"label":"川北"}],
+          "l2": {"川南":[{"label":""}], "川北":[{"label":""}]},
+          "l3": {"川南":[{"label":""}], "川北":[{"label":""}]},
+          "l4": {"川南":[{"label":""}], "川北":[{"label":""}]}
+        },
+        oilCodeMenu: [
+          {"oilCode":"0号", "label":"0号"},
+          {"oilCode":"92", "label":"92号"},
+          {"oilCode":"95", "label":"95号"},
+          {"oilCode":"98", "label":"98号"}
+        ],
         // 表格数据
         data: [
           {
-            "id":1,
-            "station_code": "MB0P",
-            "station_name": "下八庙右站",
-            "deal_num": "32",
-            "match_num": "25"
+            "stationCode": "MB0P",
+            "stationName": "下八庙右站",
+            "totalDeal": "32",
+            "isMatch": "25"
           }
         ],
         // 表格列
         columnArray: [
           {
             title: '序号',
-            key: 'id',
-            align: 'center'
+            align: 'center',
+            render: (h, params) => {
+              return h("span", {}, params.index + 1)
+            }
           },
           {
             title: '站点编号',
-            key: 'station_code',
+            key: 'stationCode',
             align: 'center'
           },
           {
             title: '站点名称',
-            key: 'station_name',
+            key: 'stationName',
             align: 'center',
             render: (h, params) => {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("---")
+                    alert("加油站油枪车辆识别情况跟踪")
                   }
                 },
                 style:{
                   cursor: 'pointer',
                   textDecoration: 'underline'
                 }
-              }, params.row.station_name);
+              }, params.row.stationName);
             }
           },
           {
             title: '交易笔数',
-            key: 'deal_num',
+            key: 'totalDeal',
             align: 'center'
           },
           {
             title: '匹配车牌',
-            key: 'match_num',
+            key: 'isMatch',
             align: 'center'
           },
           {
             title: '匹配率',
-            key: 'match_ratio',
+            key: 'matchRatio',
             align: 'center',
             render: (h, params) => {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("---")
+                    alert("站点7日匹配情况")
                   }
                 },
                 style:{
                   cursor: 'pointer',
                   textDecoration: 'underline'
                 }
-              }, params.row.deal_num === "0" || params.row.deal_num === 0 ? 0 :parseFloat(params.row.match_num/params.row.deal_num).toFixed(2) + "%");
+              }, params.row.totalDeal === "0" || params.row.totalDeal === 0 ? 0 :parseFloat(params.row.isMatch/params.row.totalDeal * 100).toFixed(2) + "%");
             }
           },
           {
             title: '车牌矫正',
-            key: 'car_revise',
+            key: 'carRevise',
             align: 'center',
             render: (h, params) => {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("---")
+                    alert("车牌矫正")
                   }
                 },
                 style:{
@@ -194,7 +229,14 @@ export default {
       }
     };
   },
-  computed: {},
+  computed: {
+    // f_data: function() {
+    //   let t = this, data = this.mainTable.data;
+    //   return data.forEach(function(item, i) {
+    //     data[i].matchRatio =  parseFloat(item.isMatch / item.totalDeal).toFixed(2)
+    //   }), data
+    // }
+  },
   watch: {},
   filters: {},
   created () {
@@ -219,22 +261,81 @@ export default {
   methods: {
     /* -------------------------查询相关 begin------------------------- */
     convertQueryParam () {
-
+      let startTime = null; let endTime = null;
+      if (this.queryForm.selectTime != null && this.queryForm.selectTime != undefined && this.queryForm.selectTime != ''){
+        let selectTime = dateTimeConvert(this.queryForm.selectTime)
+        startTime = selectTime;
+        let date = new Date(this.queryForm.selectTime);
+        endTime = dateTimeConvert(date.setDate(date.getDate() + 1));
+      }
       return {
-        ...this.queryForm
+        ...this.queryForm,
+        startTime: startTime,
+        endTime: endTime
       };
     },
     // 查询
-    async queryList () {
-      // this.mainTable.loading = true;
-      // try {
-      //   let params = this.convertQueryParam();
-      //   let result = await peonyApi.queryPeony(params);
-      //   this.mainTable.data = result.data.list;
-      //   this.mainTablePage.total = result.data.total;
-      // } finally {
-      //   this.mainTable.loading = false;
-      // }
+    queryList () {
+      this.getMatchTrackList();
+      this.queryStationCascadingMenu();
+    },
+    async getMatchTrackList(){
+      this.mainTable.loading = true;
+      try {
+        let params = this.convertQueryParam();
+        let result = await oilApi.getMatchTrackList(params);
+        this.mainTable.data = result.data.list;
+        this.mainTablePage.total = result.data.total;
+      } finally {
+        this.mainTable.loading = false;
+      }
+    },
+    async queryStationCascadingMenu(){
+      try {
+        let param = { pageNum: 1, pageSize: 10000 };
+        let result = await oilApi.getStationLinkageMenu(param);
+        this.mainTable.stationLinkageMenu = result.data;
+        this.initStationLinkageMenu();
+      } finally {
+      }
+    },
+    initStationLinkageMenu(){
+      let t = this;
+      let menu = this.mainTable.stationLinkageMenu;
+      this.mainTable.stationLinkageMenu_1 = menu.l1
+
+      let l2 = [];
+      Object.entries(menu.l2).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l2.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_2 = l2;
+
+      let l3 = [];
+      Object.entries(menu.l3).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l3.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_3 = l3;
+
+      let l4 = [];
+      Object.entries(menu.l4).forEach(function (item, i){
+        item[1].forEach(function (item1, i1){
+          l4.push(item1)
+        })
+      })
+      this.mainTable.stationLinkageMenu_4 = l4;
+    },
+    getSecond (val) {
+      this.mainTable.stationLinkageMenu_2 = this.mainTable.stationLinkageMenu.l2[val]
+    },
+    getThird (val) {
+      this.mainTable.stationLinkageMenu_3 = this.mainTable.stationLinkageMenu.l3[val]
+    },
+    getFourth (val) {
+      this.mainTable.stationLinkageMenu_4 = this.mainTable.stationLinkageMenu.l4[val]
     },
     // 重置查询
     resetQueryList () {
@@ -294,7 +395,7 @@ export default {
       try {
         this.allExportBtnLoading = true;
         let params = this.convertQueryParam();
-        await peonyApi.exportAll(params);
+        await oilApi.exportAll(params);
       } catch (e) {
         console.log(e);
       } finally {
@@ -308,7 +409,7 @@ export default {
       }
       try {
         this.batchExportBtnLoading = true;
-        await peonyApi.batchExport(this.mainTableSelectArray.map(e => e.id));
+        await oilApi.batchExport(this.mainTableSelectArray.map(e => e.id));
       } catch (e) {
         console.log(e);
       } finally {

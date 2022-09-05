@@ -9,10 +9,7 @@ import net.lab1024.smartadmin.module.oil.scjt.dao.TradeDao;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.entity.StationEntity;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchRatioVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.TradeVO;
+import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import net.lab1024.smartadmin.util.SmartPageUtil;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +33,11 @@ public class TradeService {
         return ResponseDTO.succData(pageResultDTO);
     }
 
+    /**
+     * 明细
+     * @param queryDTO
+     * @return
+     */
     public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(TradeQueryDTO queryDTO) {
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         IPage<TradeVO> voList = tradeDao.queryByPage(page, queryDTO);
@@ -43,11 +45,28 @@ public class TradeService {
         return ResponseDTO.succData(pageResultDTO);
     }
 
+    /**
+     * 匹配率
+     * @param queryDTO
+     * @return
+     */
     public ResponseDTO<MatchRatioVO> queryMatchRatio(TradeQueryDTO queryDTO) {
         MatchRatioVO vo = tradeDao.queryMatchRatio(queryDTO);
         if (vo.getTotalDeal() > 0){
             vo.setMatchRatio(String.format("%.2f", vo.getIsMatch()*1D / vo.getTotalDeal()*1D * 100));
         }
         return ResponseDTO.succData(vo);
+    }
+
+    /**
+     * 加油站车辆识别情况跟踪
+     * @param queryDTO
+     * @return
+     */
+    public ResponseDTO<PageResultDTO<MatchTrackVO>> queryMatchTrack(TradeQueryDTO queryDTO) {
+        Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        IPage<MatchTrackVO> voList = tradeDao.queryMatchTrackByPage(page, queryDTO);
+        PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
+        return ResponseDTO.succData(pageResultDTO);
     }
 }

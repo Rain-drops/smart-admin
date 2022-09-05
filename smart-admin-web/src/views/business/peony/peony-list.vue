@@ -125,14 +125,65 @@ export default {
         columnArray: [
           {
             title: '车牌',
-            key: 'car_number',
+            key: 'carNumber',
             align: 'center'
           },
           {
-            title: '出入次数',
-            key: 'in_out_num',
+            title: '日期',
+            key: 'endtime',
+            align: 'center'
+          },
+          {
+            title: '片区',
+            key: 'stationAreaName',
+            align: 'center'
+          },
+          {
+            title: '线路',
+            key: 'stationExpName',
+            align: 'center'
+          },
+          {
+            title: '站点名称',
+            key: 'stationName',
+            align: 'center'
+          },
+          {
+            title: '票号',
+            key: 'billno',
+            align: 'center'
+          },
+          {
+            title: '油品号',
+            key: 'oilcode',
+            align: 'center'
+          },
+          {
+            title: '支付金额',
+            key: 'realamount',
+            align: 'center'
+          },
+          {
+            title: '升数',
+            key: 'volume',
+            align: 'center'
+          },
+          {
+            title: '提枪时间',
+            key: 'starttime',
+            align: 'center'
+          },
+          {
+            title: '挂枪时间',
+            key: 'endtime',
+            align: 'center'
+          },
+          {
+            title: '支付时间',
+            key: 'stationName',
             align: 'center'
           }
+
         ]
       }
     };

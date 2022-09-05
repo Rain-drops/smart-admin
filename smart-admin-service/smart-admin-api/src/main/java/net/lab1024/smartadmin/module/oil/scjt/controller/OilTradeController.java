@@ -8,6 +8,7 @@ import net.lab1024.smartadmin.common.domain.ResponseDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumVO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchRatioVO;
+import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchTrackVO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.TradeVO;
 import net.lab1024.smartadmin.module.oil.scjt.service.TradeService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,4 +47,9 @@ public class OilTradeController extends BaseController {
         return tradeService.getCarInOutNum(queryDTO);
     }
 
+    @ApiOperation(value = "加油站车辆识别情况跟踪",notes = "@author 卓大")
+    @PostMapping("/matchtrack/page/query")
+    public ResponseDTO<PageResultDTO<MatchTrackVO>> getMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
+        return tradeService.queryMatchTrack(queryDTO);
+    }
 }
