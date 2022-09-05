@@ -5,6 +5,9 @@ export const oilApi = {
   getStationList: (data) => {
     return postAxios('/oil/station/page/query', data);
   },
+  getStationLinkageMenu: (data) => {
+    return postAxios('/oil/station/linkagemenu/query', data);
+  },
   getTradeList: (data) => {
     return postAxios('/oil/trade/page/query', data);
   },

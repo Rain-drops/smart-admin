@@ -148,6 +148,12 @@ export default {
       mainTable: {
         // 加载中
         loading: false,
+        stationLinkageMenu: {
+          "l1": [{"label":"川南"}, {"label":"川北"}],
+          "l2": {"川南":[{"label":""}], "川北":[{"label":""}]},
+          "l3": {"川南":[{"label":""}], "川北":[{"label":""}]},
+          "l4": {"川南":[{"label":""}], "川北":[{"label":""}]}
+        },
         baseData: {
           "totalDeal": 100,
           "isMatch": 90,
@@ -241,6 +247,7 @@ export default {
   watch: {},
   filters: {},
   created () {
+    this.queryStationCascadingMenu();
   },
   mounted () {
     this.queryList();
@@ -270,9 +277,6 @@ export default {
         let date = new Date(this.queryForm.selectTime);
         endTime = dateTimeConvert(date.setDate(date.getDate() + 1));
       }
-      console.log(startTime)
-      console.log(endTime)
-
       return {
         ...this.queryForm,
         startTime: startTime,
@@ -280,22 +284,41 @@ export default {
       };
     },
     // 查询
-    async queryList () {
+    queryList () {
       this.mainTable.loading = true;
+      try {
+        this.queryTradeList();
+        this.queryMatchRatio();
+      } finally {
+        this.mainTable.loading = false;
+      }
+
+    },
+    async queryTradeList(){
       try {
         let params = this.convertQueryParam();
         let result = await oilApi.getTradeList(params);
         this.mainTable.data = result.data.list;
         this.mainTablePage.total = result.data.total;
       } finally {
-        this.mainTable.loading = false;
+
       }
+    },
+    async queryMatchRatio(){
       try {
         let params = this.convertQueryParam();
         let result = await oilApi.getMatchRatio(params);
         this.mainTable.baseData = result.data;
       } finally {
 
+      }
+    },
+    async queryStationCascadingMenu(){
+      try {
+        let param = { pageNum: 1, pageSize: 10000 };
+        let result = await oilApi.getStationLinkageMenu(param);
+        this.mainTable.stationLinkageMenu = result.data;
+      } finally {
       }
     },
     // 重置查询

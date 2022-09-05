@@ -6,6 +6,7 @@ import net.lab1024.smartadmin.common.controller.BaseController;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationQueryDTO;
+import net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationLinkageMenuVO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationVO;
 import net.lab1024.smartadmin.module.oil.scjt.service.StationService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,12 @@ public class OilStationController extends BaseController {
     @PostMapping("/page/query")
     public ResponseDTO<PageResultDTO<StationVO>> queryByPage(@RequestBody StationQueryDTO queryDTO) {
         return stationService.queryByPage(queryDTO);
+    }
+
+    @ApiOperation(value = "分页查询站点信息",notes = "@author 卓大")
+    @PostMapping("/linkagemenu/query")
+    public ResponseDTO<StationLinkageMenuVO> queryLinkageMenu(@RequestBody StationQueryDTO queryDTO) {
+        return stationService.queryLinkageMenu();
     }
 
 }
