@@ -20,6 +20,12 @@ export const oilApi = {
   getMatchTrackList: (data) => {
     return postAxios('/oil/trade/matchtrack/page/query', data);
   },
+  getNozzleNoMatchTrackList: (data) => {
+    return postAxios('/oil/trade/matchtrack/nozzleno/page/query', data);
+  },
+  getCarTraceList: (data) => {
+    return postAxios('/oil/trade/cartrace/page/query', data);
+  },
 
 
 

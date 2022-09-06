@@ -6,10 +6,7 @@ import net.lab1024.smartadmin.common.controller.BaseController;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarInOutNumVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchRatioVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchTrackVO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.vo.TradeVO;
+import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import net.lab1024.smartadmin.module.oil.scjt.service.TradeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,5 +48,17 @@ public class OilTradeController extends BaseController {
     @PostMapping("/matchtrack/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryMatchTrack(queryDTO);
+    }
+
+    @ApiOperation(value = "加油站油枪车辆识别情况跟踪",notes = "@author 卓大")
+    @PostMapping("/matchtrack/nozzleno/page/query")
+    public ResponseDTO<PageResultDTO<MatchTrackVO>> getNozzleNoMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
+        return tradeService.queryNozzleNoMatchTrack(queryDTO);
+    }
+
+    @ApiOperation(value = "车辆跟踪",notes = "@author 卓大")
+    @PostMapping("/cartrace/page/query")
+    public ResponseDTO<PageResultDTO<CarTraceVO>> getCarTraceByPage(@RequestBody TradeQueryDTO queryDTO) {
+        return tradeService.queryCarTraceByPage(queryDTO);
     }
 }

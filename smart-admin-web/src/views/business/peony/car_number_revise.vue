@@ -73,7 +73,7 @@ import {dateTimeConvert} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'CarNumberReviseList',
   components: {
     PeonyListForm
   },
@@ -91,6 +91,10 @@ export default {
       // 搜索表单
       queryForm: {
         // ID
+        selectTime: null,
+        startTime: null,
+        endTime: null,
+        stationCode: null,
         stationName: null,
         carNumber: null,
         nozzleNo: null,
@@ -269,8 +273,14 @@ export default {
         let date = new Date(this.queryForm.selectTime);
         endTime = dateTimeConvert(date.setDate(date.getDate() + 1));
       }
+      if (null != this.$route.query && undefined != this.$route.query && '' != this.$route.query){
+        this.queryForm.stationCode = this.$route.query.stationCode
+        this.queryForm.nozzleNo = this.$route.query.nozzleNo
+      }
       return {
-        ...this.queryForm
+        ...this.queryForm,
+        startTime: startTime,
+        endTime: endTime
       };
     },
     // 查询

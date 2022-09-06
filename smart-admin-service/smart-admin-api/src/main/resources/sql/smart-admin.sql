@@ -649,7 +649,20 @@ INSERT INTO `t_privilege` (`id`, `type`, `name`, `key`, `url`, `sort`, `parent_k
 	(123, 2, '批量删除', 'peony1-list-batch-delete', '', 4, 'PeonyList1', '2020-12-14 15:16:33', '2020-12-14 15:16:33'),
 	(124, 2, '批量导出', 'peony1-list-batch-export', '', 5, 'PeonyList1', '2020-12-14 15:16:33', '2020-12-14 15:16:33'),
 	(125, 2, '导出全部', 'peony1-list-export-all', '', 6, 'PeonyList1', '2020-12-14 15:16:33', '2020-12-14 15:16:33'),
-	(126, 2, '批量保存功能点', 'privilege-batch-save-points', 'privilegeController.functionSaveOrUpdate', 1, 'SystemPrivilege', '2020-12-14 15:17:11', '2020-12-14 15:17:11');
+	(126, 2, '批量保存功能点', 'privilege-batch-save-points', 'privilegeController.functionSaveOrUpdate', 1, 'SystemPrivilege', '2020-12-14 15:17:11', '2020-12-14 15:17:11'),
+    (127, 1, '站点状态', 'StationList', '/peony/station_list', 4, 'Peony', '2022-09-03 22:59:41', '2020-12-14 15:16:26'),
+    (128, 1, '车辆明细查询', 'OrderList', '/peony/order_list', 5, 'Peony', '2022-09-03 23:01:44', '2020-12-14 15:16:26'),
+    (129, 1, '车辆识别情况跟踪', 'CarNumberMatchTrackList', '/peony/car_number_match_track', 6, 'Peony', '2022-09-03 23:12:35', '2020-12-14 15:16:26'),
+    (130, 1, '车牌矫正', 'CarNumberReviseList', '/peony/car_number_revise', 7, 'Peony', '2022-09-03 23:03:02', '2020-12-14 15:16:26'),
+    (131, 1, '同比(环比)', 'GrowthAnalyseList', '/peony/growth_analyse', 8, 'Peony', '2022-09-03 23:03:08', '2020-12-14 15:16:26'),
+    (132, 1, '车牌出入站频次', 'CarNumberInOutList', '/peony/car_number_in_out_list', 9, 'Peony', '2022-09-03 23:11:24', '2020-12-14 15:16:26'),
+    (133, 1, '车牌跟踪', 'CarNumberTraceList', '/peony/car_number_trace', 10, 'Peony', '2022-09-07 00:06:52', '2020-12-14 15:16:26'),
+    (134, 1, '油枪车辆识别情况跟踪', 'NozzleNoMatchTrackList', '/peony/nozzle_no_match_track', 11, 'Peony', '2022-09-07 01:03:27', '2020-12-14 15:16:26'),
+    (135, 1, '车牌追踪', 'CarNumberTraceList2', '/peony/car_number_trace', 12, 'Peony', '2022-09-07 00:05:12', '2020-12-14 15:16:26'),
+    (136, 1, '车牌追踪', 'CarNumberTraceList3', '/peony/car_number_trace', 13, 'Peony', '2022-09-07 00:05:13', '2020-12-14 15:16:26'),
+    (137, 1, '车牌追踪', 'CarNumberTraceList4', '/peony/car_number_trace', 14, 'Peony', '2022-09-07 00:05:14', '2020-12-14 15:16:26'),
+    (138, 1, '车牌追踪', 'CarNumberTraceList5', '/peony/car_number_trace', 15, 'Peony', '2022-09-07 00:05:15', '2020-12-14 15:16:26')
+	;
 /*!40000 ALTER TABLE `t_privilege` ENABLE KEYS */;
 
 -- 导出  表 smart-admin-dev.t_quartz_task 结构

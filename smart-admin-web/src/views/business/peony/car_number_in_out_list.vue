@@ -74,7 +74,7 @@ import {dateTimeRangeConvert} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'CarNumberInOutList',
   components: {
     PeonyListForm
   },
@@ -92,10 +92,12 @@ export default {
       // 搜索表单
       queryForm: {
         selectTimeRange: ['', ''],
-        stationCode: null,
-        stationName: null,
+        startTime: null,
+        endTime: null,
         carProvince: null,
         carCity: null,
+        stationCode: null,
+        stationName: null,
         carNumber: null,
         minFrequency: null,
         maxFrequency: null,

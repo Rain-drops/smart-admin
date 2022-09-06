@@ -9,28 +9,28 @@
         <span>
           片区名称 :
           <!--<Input placeholder="请选择片区名称" style="width: 180px" v-model="queryForm.stationAreaName"/>-->
-          <Select v-model="queryForm.stationAreaName" style="width:200px" @on-change="getSecond">
+          <Select v-model="queryForm.stationAreaName" style="width:200px" clearable filterable @on-change="getSecond">
             <Option v-for="item in mainTable.stationLinkageMenu_1" :value="item.label" :key="item.label">{{ item.label }}</Option>
           </Select>
         </span>
         <span>
           线路名称 :
           <!--<Input placeholder="请选择线路名称" style="width: 180px" v-model="queryForm.stationExpName"/>-->
-          <Select v-model="queryForm.stationExpName" style="width:200px" @on-change="getThird">
+          <Select v-model="queryForm.stationExpName" style="width:200px" clearable filterable @on-change="getThird">
             <Option v-for="item in mainTable.stationLinkageMenu_2" :value="item.label" :key="item.label">{{ item.label }}</Option>
           </Select>
         </span>
         <span>
           站组名称 :
           <!--<Input placeholder="请选择站组名称" style="width: 180px" v-model="queryForm.stationExpServiceArea"/>-->
-          <Select v-model="queryForm.stationExpServiceArea" style="width:200px" @on-change="getFourth">
+          <Select v-model="queryForm.stationExpServiceArea" style="width:200px" clearable filterable @on-change="getFourth">
             <Option v-for="item in mainTable.stationLinkageMenu_3" :value="item.label" :key="item.label">{{ item.label }}</Option>
           </Select>
         </span>
         <span>
           站点名称 :
           <!--<Input placeholder="请选择站点名称" style="width: 180px" v-model="queryForm.stationName"/>-->
-          <Select v-model="queryForm.stationName" style="width:200px" >
+          <Select v-model="queryForm.stationName" style="width:200px" clearable filterable >
             <Option v-for="item in mainTable.stationLinkageMenu_4" :value="item.label" :key="item.label">{{ item.label }}</Option>
           </Select>
         </span>
@@ -125,7 +125,7 @@ import moment from "moment/moment";
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'OrderList',
   components: {
     PeonyListForm
   },
@@ -148,6 +148,7 @@ export default {
         stationAreaName: null,
         stationExpName: null,
         stationExpServiceArea: null,
+        stationCode: null,
         stationName: null,
         billNo: null,
         oilCode: null,

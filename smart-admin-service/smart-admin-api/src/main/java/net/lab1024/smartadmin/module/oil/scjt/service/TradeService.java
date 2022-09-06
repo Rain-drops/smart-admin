@@ -69,4 +69,28 @@ public class TradeService {
         PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
+
+    /**
+     * 加油站车辆识别情况跟踪
+     * @param queryDTO
+     * @return
+     */
+    public ResponseDTO<PageResultDTO<MatchTrackVO>> queryNozzleNoMatchTrack(TradeQueryDTO queryDTO) {
+        Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        IPage<MatchTrackVO> voList = tradeDao.queryNozzleNoMatchTrackByPage(page, queryDTO);
+        PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
+        return ResponseDTO.succData(pageResultDTO);
+    }
+
+    /**
+     * 车辆跟踪
+     * @param queryDTO
+     * @return
+     */
+    public ResponseDTO<PageResultDTO<CarTraceVO>> queryCarTraceByPage(TradeQueryDTO queryDTO) {
+        Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        IPage<CarTraceVO> voList = tradeDao.queryCarTraceByPage(page, queryDTO);
+        PageResultDTO<CarTraceVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
+        return ResponseDTO.succData(pageResultDTO);
+    }
 }

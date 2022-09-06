@@ -69,7 +69,7 @@ import PeonyListForm from './components/peony-list-form';
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'GrowthAnalyseList',
   components: {
     PeonyListForm
   },

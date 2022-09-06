@@ -6,7 +6,7 @@ export const peony = [
     name: 'Peony',
     component: Main,
     meta: {
-      title: '牡丹管理',
+      title: '四川交投',
       icon: 'icon iconfont iconyoujianguanli'
     },
     children: [
@@ -14,7 +14,7 @@ export const peony = [
         path: '/peony/station_list',
         name: 'StationList',
         meta: {
-          title: '站点状态(无下钻)',
+          title: '站点状态',
           privilege: [
             { title: '查询', name: 'peony-list-query' },
             { title: '批量导出', name: 'peony-list-batch-export' },
@@ -27,7 +27,7 @@ export const peony = [
         path: '/peony/car_number_in_out_list',
         name: 'CarNumberInOutList',
         meta: {
-          title: '车牌出入站频次(无下钻)',
+          title: '车牌出入站频次',
           privilege: [
             { title: '查询', name: 'peony-list-query' },
             { title: '批量导出', name: 'peony-list-batch-export' },
@@ -40,7 +40,7 @@ export const peony = [
         path: '/peony/order_list',
         name: 'OrderList',
         meta: {
-          title: '车辆明细查询(无下钻)',
+          title: '车辆明细查询',
           privilege: [
             { title: '查询', name: 'peony-list-query' },
             { title: '批量导出', name: 'peony-list-batch-export' },
@@ -63,6 +63,19 @@ export const peony = [
         component: () => import('@/views/business/peony/car_number_match_track.vue')
       },
       {
+        path: '/peony/nozzle_no_match_track',
+          name: 'NozzleNoMatchTrackList',
+        meta: {
+          title: '油枪车辆识别情况跟踪',
+          privilege: [
+            { title: '查询', name: 'peony-list-query' },
+            { title: '批量导出', name: 'peony-list-batch-export' },
+            { title: '导出全部', name: 'peony-list-export-all' }
+          ]
+        },
+        component: () => import('@/views/business/peony/nozzle_no_match_track.vue')
+      },
+      {
         path: '/peony/car_number_revise',
         name: 'CarNumberReviseList',
         meta: {
@@ -77,7 +90,7 @@ export const peony = [
       },
       {
         path: '/peony/car_number_trace',
-        name: 'PeonyList',
+        name: 'CarNumberTraceList',
         meta: {
           title: '车牌跟踪',
           privilege: [
@@ -86,7 +99,7 @@ export const peony = [
             { title: '导出全部', name: 'peony-list-export-all' }
           ]
         },
-        component: () => import('@/views/business/peony/peony-list.vue')
+        component: () => import('@/views/business/peony/car_number_trace.vue')
       },
       {
         path: '/peony/growth_analyse',

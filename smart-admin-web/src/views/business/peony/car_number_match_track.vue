@@ -81,7 +81,7 @@ import {dateTimeConvert} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'PeonyList',
+  name: 'CarNumberMatchTrackList',
   components: {
     PeonyListForm
   },
@@ -169,7 +169,7 @@ export default {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("加油站油枪车辆识别情况跟踪")
+                    this.lookNozzleNoMatchTrack(params.row)
                   }
                 },
                 style:{
@@ -215,7 +215,7 @@ export default {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("车牌矫正")
+                    this.lookCarNumberRevise(params.row);
                   }
                 },
                 style:{
@@ -388,7 +388,6 @@ export default {
       return true;
     },
     /* -------------------------批量操作 end------------------------- */
-
     /* -------------------------导入导出 begin------------------------- */
     // 导出全部
     async exportAll () {
@@ -417,6 +416,12 @@ export default {
       }
     },
     /* -------------------------导入导出 end------------------------- */
+    lookCarNumberRevise(params){
+      this.$router.push({name:"CarNumberReviseList", query:{stationCode: params.stationCode}})
+    },
+    lookNozzleNoMatchTrack(params){
+      this.$router.push({name:"NozzleNoMatchTrackList", query:{stationCode: params.stationCode}})
+    }
   }
 };
 </script>

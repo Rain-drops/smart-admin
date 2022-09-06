@@ -11,6 +11,7 @@ public class MatchTrackVO {
     private Long id;
     private String stationCode;
     private String stationName;
+    private String nozzleno;
     private Long totalDeal;
     private Long isMatch;
     private String matchRatio;

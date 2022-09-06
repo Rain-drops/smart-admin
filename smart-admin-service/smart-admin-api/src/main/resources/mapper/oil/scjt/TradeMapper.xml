@@ -100,6 +100,7 @@
         </where>
     </select>
 
+    <!-- 匹配率 -->
     <select id="queryMatchRatio" resultMap="MatchRatioVO">
         SELECT
             COUNT( distinct endtime) total_deal,
@@ -219,7 +220,44 @@
         </where>
         GROUP BY
             station_area_name, station_exp_name, station_exp_service_area, station_code, station_name
+    </select>
 
+    <!-- 油枪车辆识别情况跟踪 -->
+    <select id="queryNozzleNoMatchTrackByPage" resultMap="MatchTrackVO">
+        SELECT
+        station_code, station_name, nozzleno,
+        count(distinct endtime) total_deal,
+        SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match
+        FROM
+        fullingdb.bus_tradelog
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND endtime <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND endtime <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+        </where>
+        GROUP BY
+            station_area_name, station_exp_name, station_exp_service_area, station_code, station_name, nozzleno
     </select>
 
     <!-- 车牌跟踪 -->
@@ -229,10 +267,11 @@
             mid(carnumber,2,1) city,
             carnumber,
             date_add(t.endtime,interval 8 hour) endtime,
-            t.starttime,
+            date_add(t.starttime,interval 8 hour) starttime,
             t.endtime,
             o.paytime,
             o.billno,
+            o.nozzleno,
             o.realamount,
             o.volume,
             CONCAT(t.oilcode,t.oilclass) oilcode,
@@ -248,24 +287,24 @@
             from fullingdb.bus_orderlog
             <where>
                 <if test="queryDTO.startTime != null">
-                    AND date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime}
+                    AND date_add(paytime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime}
                 </if>
                 <if test="queryDTO.endTime != null">
-                    AND date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
+                    AND date_add(paytime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
                 </if>
             </where>
             group by paytime,billno,realamount,volume,station_code,nozzleno,startread,endread
             ) o
-            left join
+        left join
             (
             select station_code,nozzleno,startread,endread,carnumber,endtime,starttime,oilclass,oilcode,station_name,station_area_name,station_exp_name,station_exp_service_area
             from fullingdb.bus_tradelog
             where
             <if test="queryDTO.startTime != null">
-                date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+                date_add(endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
             </if>
             <if test="queryDTO.endTime != null">
-                date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+                date_add(endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
             </if>
                 ASCII(carnumber) <![CDATA[>]]> 127
             ) t
@@ -294,6 +333,9 @@
         </if>
         <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
             t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+        </if>
+        <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+            t.oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%') AND
         </if>
         <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
             t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
