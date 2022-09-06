@@ -11,6 +11,10 @@
 
     <resultMap id="MatchTrackVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.MatchTrackVO"></resultMap>
 
+    <resultMap id="CarTraceVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarTraceVO"></resultMap>
+
+    <resultMap id="CarTrafficFlowVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarTrafficFlowVO"></resultMap>
+
     <!-- 交易明细/车牌矫正 -->
     <select id="queryByPage" resultMap="TradeVO">
         SELECT
@@ -27,29 +31,71 @@
             <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
                 AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
             </if>
+            <if test="queryDTO.stationAreaNames != null">
+                AND station_area_name in (
+                <foreach collection="queryDTO.stationAreaNames" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
+            </if>
             <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
                 AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpNames != null">
+                AND station_exp_name in (
+                <foreach collection="queryDTO.stationExpNames" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
             </if>
             <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
                 AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
             </if>
+            <if test="queryDTO.stationExpServiceAreas != null">
+                AND station_exp_service_area in (
+                <foreach collection="queryDTO.stationExpServiceAreas" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
+            </if>
             <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
                 AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationCodes != null">
+                AND station_code in (
+                <foreach collection="queryDTO.stationCodes" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
             </if>
             <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
                 AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
             </if>
-            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
-                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            <if test="queryDTO.stationNames != null">
+                AND station_name in (
+                <foreach collection="queryDTO.stationNames" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
             </if>
             <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
                 AND oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
             </if>
-            <if test="queryDTO.billNo != null and queryDTO.billNo != ''">
-                AND billNo = #{queryDTO.billNo}
+            <if test="queryDTO.oilCodes != null">
+                AND oilcode in (
+                <foreach collection="queryDTO.oilCodes" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+                )
             </if>
             <if test="queryDTO.nozzleNo != null and queryDTO.nozzleNo != ''">
                 AND nozzleno = #{queryDTO.nozzleNo}
+            </if>
+            <if test="queryDTO.billNo != null and queryDTO.billNo != ''">
+                AND billNo = #{queryDTO.billNo}
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
             </if>
         </where>
     </select>
@@ -82,17 +128,17 @@
             <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
                 AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
             </if>
-            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
-                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
-            </if>
             <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
                 AND oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+            <if test="queryDTO.nozzleNo != null and queryDTO.nozzleNo != ''">
+                AND nozzleno = #{queryDTO.nozzleNo}
             </if>
             <if test="queryDTO.billNo != null and queryDTO.billNo != ''">
                 AND billNo = #{queryDTO.billNo}
             </if>
-            <if test="queryDTO.nozzleNo != null and queryDTO.nozzleNo != ''">
-                AND nozzleno = #{queryDTO.nozzleNo}
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
             </if>
         </where>
     </select>
@@ -137,7 +183,7 @@
 
     </select>
 
-    <!-- 车辆识别情况跟踪 -->
+    <!-- 车辆识别情况跟踪/匹配率变化 -->
     <select id="queryMatchTrackByPage" resultMap="MatchTrackVO">
         SELECT
             station_code, station_name,
@@ -177,74 +223,129 @@
     </select>
 
     <!-- 车牌跟踪 -->
-    <select id="">
+    <select id="queryCarTraceByPage" resultMap="CarTraceVO">
         SELECT
-            left(carnumber,1)省,
-            mid(carnumber,2,1)市,
-            carnumber 车牌,
-            DATE_FORMAT(date_add(t.endtime,interval 8 hour),'%Y-%m-%d') 日期,
-            date_add(t.endtime,interval 8 hour) 时间,
-            t.starttime 提枪时间,
-            t.endtime 挂枪时间,
-            o.paytime 支付时间,
-            o.billno 票号,
-            o.realamount 支付金额,
-            o.volume 加油量,
-            CONCAT(t.oilcode,t.oilclass)油品号,
-            t.oilclass 油类型,
-            t.station_name 站点名称,
-            t.station_code 站点编码,
-            station_area_name 片区,
-            station_exp_name 线路,
-            station_exp_service_area 站组
+            left(carnumber,1) province,
+            mid(carnumber,2,1) city,
+            carnumber,
+            date_add(t.endtime,interval 8 hour) endtime,
+            t.starttime,
+            t.endtime,
+            o.paytime,
+            o.billno,
+            o.realamount,
+            o.volume,
+            CONCAT(t.oilcode,t.oilclass) oilcode,
+            t.oilclass,
+            t.station_name,
+            t.station_code,
+            station_area_name,
+            station_exp_name,
+            station_exp_service_area
         from
             (
             select paytime,billno,realamount,volume,station_code,nozzleno,startread,endread,max(update_time)
             from fullingdb.bus_orderlog
+            <where>
+                <if test="queryDTO.startTime != null">
+                    AND date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime}
+                </if>
+                <if test="queryDTO.endTime != null">
+                    AND date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
+                </if>
+            </where>
             group by paytime,billno,realamount,volume,station_code,nozzleno,startread,endread
             ) o
             left join
             (
             select station_code,nozzleno,startread,endread,carnumber,endtime,starttime,oilclass,oilcode,station_name,station_area_name,station_exp_name,station_exp_service_area
             from fullingdb.bus_tradelog
-            where ASCII(carnumber) <![CDATA[>]]> 127
+            where
+            <if test="queryDTO.startTime != null">
+                date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+            </if>
+            <if test="queryDTO.endTime != null">
+                date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+            </if>
+                ASCII(carnumber) <![CDATA[>]]> 127
             ) t
         on o.station_code=t.station_code
             and o.nozzleno=t.nozzleno
             and o.startread=t.startread
             and o.endread=t.endread
-        where length(carnumber) <![CDATA[>]]> 0
+        WHERE
+        <if test="queryDTO.startTime != null">
+            date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+        </if>
+        <if test="queryDTO.endTime != null">
+            date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+        </if>
+        <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+            t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%') AND
+        </if>
+        <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+            t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%') AND
+        </if>
+        <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+            t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%') AND
+        </if>
+        <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+            t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+        </if>
+        <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+            t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+        </if>
+        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+            t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+        </if>
+            length(t.carnumber) <![CDATA[>]]> 0
     </select>
 
     <!-- 车流走势 -->
-    <select id="">
+    <select id="queryCarTrafficFlowByPage" resultMap="CarTrafficFlowVO">
         SELECT
-            left(carnumber,1)省,
-            mid(carnumber,2,1)市,
-            carnumber 车牌,
-            DATE_FORMAT(date_add(endtime,interval 8 hour),'%Y-%m-%d') 日期,
-            date_add(endtime,interval 8 hour) 挂枪时间,
-            count(date_add(endtime,interval 8 hour)) 交易笔数,
-            volume 加油量,
-            CONCAT(oilcode,oilclass)油品号,
-            oilclass 油类型,
-            station_name 站点名称,
-            station_code 站点编码,
-            station_area_name 片区,
-            station_exp_name 线路,
-            station_exp_service_area 站组
+            left(carnumber,1) province,
+            mid(carnumber,2,1) city,
+            station_area_name,
+            station_exp_name,
+            station_exp_service_area,
+            station_name,
+            station_code,
+            carnumber,
+            CONCAT(oilcode,oilclass) oilcode,
+            oilclass,
+            cast(date_add(t.endtime,interval 8 hour) as date) endtime,
+            count(date_add(endtime,interval 8 hour)) total_deal,
+            sum(volume) volume
         FROM fullingdb.bus_tradelog
-        WHERE ASCII(carnumber) <![CDATA[>]]> 127 AND LENGTH(oilclass) <![CDATA[>]]> 0
-        GROUP BY 省,市,车牌,日期,挂枪时间,加油量,油品号,油类型,
-            站点名称,站点编码,片区,线路,站组
-        ORDER BY endtime
-    </select>
-
-    <!-- 七日匹配率变化 -->
-    <select id="">
-        SELECT  endtime,nozzleno,station_code,station_name,date_format(endtime,'%Y-%m-%d') 日期,
-                (case when length(carnumber) > 1 then 1 else 0 end) ismatch
-        from fullingdb.bus_tradelog
-        where station_name = ?{站点名称} AND (endtime BETWEEN date_format( date_sub(?{截止时间} , interval 7 day) ,'%Y-%m-%d') and ?{截止时间})
+        WHERE
+        <if test="queryDTO.startTime != null">
+            date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+        </if>
+        <if test="queryDTO.endTime != null">
+            date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+        </if>
+        <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+            t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%') AND
+        </if>
+        <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+            t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%') AND
+        </if>
+        <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+            t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%') AND
+        </if>
+        <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+            t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+        </if>
+        <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+            t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+        </if>
+        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+            t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+        </if>
+            ASCII(carnumber) <![CDATA[>]]> 127 AND LENGTH(oilclass) <![CDATA[>]]> 0
+        GROUP BY province, city, station_area_name, station_exp_name, station_exp_service_area, station_name, station_code
+            cast(date_add(t.endtime,interval 8 hour) as date), carnumber, oilcode, oilclass
+        ORDER BY t.endtime
     </select>
 </mapper>
