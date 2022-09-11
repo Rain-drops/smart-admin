@@ -8,12 +8,15 @@ import net.lab1024.smartadmin.common.domain.ResponseDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import net.lab1024.smartadmin.module.oil.scjt.service.TradeService;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Jackie
@@ -60,5 +63,39 @@ public class OilTradeController extends BaseController {
     @PostMapping("/cartrace/page/query")
     public ResponseDTO<PageResultDTO<CarTraceVO>> getCarTraceByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryCarTraceByPage(queryDTO);
+    }
+
+    @ApiOperation(value = "车流走势",notes = "@author 卓大")
+    @PostMapping("/cartraffic/page/query")
+    public ResponseDTO<PageResultDTO<CarTrafficFlowVO>> getCarTrafficFlowByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setStartTime(DateUtils.addDays(new Date(), -7));
+            queryDTO.setEndTime(new Date());
+        }else {
+            queryDTO.setStartTime(DateUtils.addDays(queryDTO.getEndTime(), -7));
+        }
+        return tradeService.queryCarTrafficFlowByPage(queryDTO);
+    }
+
+    @ApiOperation(value = "车流走势Echarts",notes = "@author 卓大")
+    @PostMapping("/cartraffic/chart/page/query")
+    public ResponseDTO<Map<String, Object>> getCarTrafficFlowChart(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setStartTime(DateUtils.addMonths(new Date(), -6));
+            queryDTO.setEndTime(new Date());
+        }
+        return tradeService.queryCarTrafficFlowChart(queryDTO);
+    }
+
+    @ApiOperation(value = "同环比",notes = "@author 卓大")
+    @PostMapping("/cargrowthanalyse/page/query")
+    public ResponseDTO<PageResultDTO<CarGrowthAnalyseVO>> queryGrowthAnalyseByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setStartTime(new Date());
+            queryDTO.setEndTime(DateUtils.addDays(new Date(), 1));
+        }else {
+            queryDTO.setEndTime(DateUtils.addDays(queryDTO.getEndTime(), 1));
+        }
+        return tradeService.queryGrowthAnalyseByPage(queryDTO);
     }
 }

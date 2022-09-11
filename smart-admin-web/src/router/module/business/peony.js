@@ -102,8 +102,21 @@ export const peony = [
         component: () => import('@/views/business/peony/car_number_trace.vue')
       },
       {
-        path: '/peony/growth_analyse',
-        name: 'GrowthAnalyseList',
+        path: '/peony/car_traffic_flow',
+        name: 'CarTrafficFlowList',
+        meta: {
+          title: '车流走势',
+          privilege: [
+            { title: '查询', name: 'peony-list-query' },
+            { title: '批量导出', name: 'peony-list-batch-export' },
+            { title: '导出全部', name: 'peony-list-export-all' }
+          ]
+        },
+        component: () => import('@/views/business/peony/car_traffic_flow.vue')
+      },
+      {
+        path: '/peony/car_growth_analyse',
+        name: 'CarGrowthAnalyseList',
         meta: {
           title: '车流同(环)比',
           privilege: [
@@ -112,7 +125,7 @@ export const peony = [
             { title: '导出全部', name: 'peony-list-export-all' }
           ]
         },
-        component: () => import('@/views/business/peony/growth_analyse.vue')
+        component: () => import('@/views/business/peony/car_growth_analyse.vue')
       }
     ]
   }

@@ -70,24 +70,38 @@
       />
     </Card>
     <!-------表格列表 end------->
+
+    <Modal v-model="lineChartMatchRatio" width="60%"  title="" footer-hide scrollable>
+      <div style="margin-top: 18px; margin-bottom: 10px">
+        <HomeCard desc="" title="7日匹配率">
+          <ChartLine id="lineChartMR" ref="lineChartMR" :value="mainTable.carTrafficFlowData" />
+        </HomeCard>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
+import HomeCard from './components/card';
+import ChartLine from './components/chart-line';
 import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
 import PeonyListForm from './components/peony-list-form';
-import {oilApi} from "@/api/scjt-oil";
-import {dateTimeConvert} from "@/lib/util";
+import { oilApi } from "@/api/scjt-oil";
+import {dateTimeConvert, on} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
   name: 'CarNumberMatchTrackList',
   components: {
-    PeonyListForm
+    PeonyListForm,
+    HomeCard,
+    ChartLine
   },
   props: {},
   data  () {
     return {
+      // 7日匹配率折线图
+      lineChartMatchRatio: false,
       // 表格多选选中的元素数组
       mainTableSelectArray: [],
       /* -------------------------导出操作------------------------- */
@@ -147,6 +161,15 @@ export default {
             "isMatch": "25"
           }
         ],
+        carTrafficFlowData: {
+          Mon: 13253,
+          Tue: 34235,
+          Wed: 26321,
+          Thu: 12340,
+          Fri: 24643,
+          Sat: 1322,
+          Sun: 1324
+        },
         // 表格列
         columnArray: [
           {
@@ -197,14 +220,16 @@ export default {
               return h("span", {
                 on: {
                   click: () => {
-                    alert("站点7日匹配情况")
+                    // alert(params.row.stationCode + "站点7日匹配情况")
+                    this.getCarTrafficFlowByPage(params.row.stationCode);
+                    this.lineChartMatchRatio = true;
                   }
                 },
                 style:{
                   cursor: 'pointer',
                   textDecoration: 'underline'
                 }
-              }, params.row.totalDeal === "0" || params.row.totalDeal === 0 ? 0 :parseFloat(params.row.isMatch/params.row.totalDeal * 100).toFixed(2) + "%");
+              }, params.row.totalDeal === "0" || params.row.totalDeal === 0 ? 0 : parseFloat(params.row.isMatch/params.row.totalDeal * 100).toFixed(2) + "%");
             }
           },
           {
@@ -299,6 +324,25 @@ export default {
       } finally {
       }
     },
+    async getCarTrafficFlowByPage(stationCode){
+      let t = this;
+      try {
+        let param = this.convertQueryParam();
+        param.endTime = dateTimeConvert(new Date())
+        param.pageNum = 1;
+        param.pageSize = 10000;
+        param.stationCode = stationCode;
+        let result = await oilApi.getCarTrafficFlowByPage(param);
+        let carTrafficFlowData = {};
+        result.data.list.forEach(function (a, n){
+          carTrafficFlowData[a.endtime] = a.totalDeal === "0" || a.totalDeal === 0 ? 0 : parseFloat(a.isMatch/a.totalDeal * 100).toFixed(2);
+          console.log(a.isMatch + ',,,,' + a.totalDeal)
+        })
+        t.mainTable.carTrafficFlowData = carTrafficFlowData;
+        on(window, 'resize', this.$refs.lineChartMR.resize());
+      } finally {
+      }
+    },
     initStationLinkageMenu(){
       let t = this;
       let menu = this.mainTable.stationLinkageMenu;
@@ -341,7 +385,7 @@ export default {
     resetQueryList () {
       let pageSize = this.queryForm.pageSize;
       this.queryForm = {
-        station_name: null,
+        stationName: null,
         pageNum: 1,
         pageSize: pageSize,
         orders: []

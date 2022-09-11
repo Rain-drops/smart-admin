@@ -272,7 +272,6 @@ export const utils = {
     vm.handleSelectAll(false);
     // 选中的idList
     let idList = copyMess.map(item => item[key]);
-    console.log(idList);
     for (let item of allData) {
       if (idList.every(id => id !== item.id)) {
         vm.$set(item, '_checked', true);
@@ -303,7 +302,20 @@ export const utils = {
     date.setDate(date.getDate() + AddDayCount);
     return this.getDate(date, format);
   },
+  getDateAddMonthStr (date, AddDayCount, format) {
+    if (undefined === date || null === date || '' === date){
+      date = new Date();
+    }
+    // 获取AddDayCount天后的日期
+    let lastMonthDate = new Date();
+    lastMonthDate.setDate(date.getDate());
+    lastMonthDate.setMonth(date.getMonth() + AddDayCount)
+    return this.getDate(lastMonthDate, format);
+  },
   getDate (date, format) {
+    if (undefined === date || null === date || '' === date){
+      date = new Date();
+    }
     let year = date.getFullYear();
     // day获取当前几号，不足10补0
     let day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
@@ -498,7 +510,7 @@ export const utils = {
 export const dateTimeConvert = (timerange) => {
   // timerange
   return moment(timerange).format("YYYY-MM-DD 00:00:00")
-}
+};
 
 export const dateTimeRangeConvert = (timerange) => {
   // timerange

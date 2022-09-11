@@ -26,11 +26,21 @@ public class TradeQueryDTO extends PageParamDTO {
     private List<String> oilCodes;
     private String oilClass;
     private List<String> oilClasses;
+    private String chartRadioType;
+    private String timeRadioType;
+    private String carAttributionType;
     private String carNumber;
     private String billNo;
     private Integer nozzleNo;
     private Date startTime;
     private Date endTime;
+    /** 0 同比，1 环比 */
+    private String growthAnalyseDataType;
+    /** 0 片区-站组 分组，1 片区-站点 分组 */
+    private String growthAnalyseStationType;
+    /** 1 跳过停业站， 0 不跳过 */
+    private String skipStopStation;
+
 
     @ApiModelProperty(value = "出入频次")
     private Integer minFrequency;

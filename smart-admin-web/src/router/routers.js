@@ -39,5 +39,5 @@ export const routers = [
   ...error,
   ...business,
   ...system,
-  ...support
+  // ...support
 ];

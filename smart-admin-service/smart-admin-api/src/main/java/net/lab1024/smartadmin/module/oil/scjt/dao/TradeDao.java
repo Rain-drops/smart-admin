@@ -3,12 +3,15 @@ package net.lab1024.smartadmin.module.oil.scjt.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import net.lab1024.smartadmin.module.oil.scjt.domain.bo.CarGrowthAnalyseBO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.entity.TradeEntity;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author Jackie
@@ -70,6 +73,15 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @param queryDTO
      * @return
      */
-    IPage<MatchTrackVO> queryCarTrafficFlowByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+    IPage<CarTrafficFlowVO> queryCarTrafficFlowByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+
+    List<CarTrafficFlowVO> queryCarTrafficFlowChart(@Param("queryDTO") TradeQueryDTO queryDTO);
+    /**
+     * 同环比
+     * @param queryDTO
+     * @return
+     */
+    List<CarGrowthAnalyseBO> queryGrowthAnalyse(@Param("queryDTO") TradeQueryDTO queryDTO);
+    IPage<CarGrowthAnalyseBO> queryGrowthAnalyseByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
 
 }

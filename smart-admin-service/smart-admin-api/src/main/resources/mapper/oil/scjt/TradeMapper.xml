@@ -14,6 +14,7 @@
     <resultMap id="CarTraceVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarTraceVO"></resultMap>
 
     <resultMap id="CarTrafficFlowVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.CarTrafficFlowVO"></resultMap>
+    <resultMap id="CarGrowthAnalyseBO" type="net.lab1024.smartadmin.module.oil.scjt.domain.bo.CarGrowthAnalyseBO"></resultMap>
 
     <!-- 交易明细/车牌矫正 -->
     <select id="queryByPage" resultMap="TradeVO">
@@ -346,48 +347,242 @@
     <!-- 车流走势 -->
     <select id="queryCarTrafficFlowByPage" resultMap="CarTrafficFlowVO">
         SELECT
-            left(carnumber,1) province,
-            mid(carnumber,2,1) city,
+            <if test="queryDTO.chartRadioType == '1'">
+                cast(date_add(t.endtime,interval 8 hour) as date) endtime,
+            </if>
+            <if test="queryDTO.chartRadioType == '0'">
+                left(carnumber,1) province,
+            </if>
             station_area_name,
             station_exp_name,
             station_exp_service_area,
             station_name,
             station_code,
-            carnumber,
-            CONCAT(oilcode,oilclass) oilcode,
-            oilclass,
-            cast(date_add(t.endtime,interval 8 hour) as date) endtime,
-            count(date_add(endtime,interval 8 hour)) total_deal,
+            count(distinct date_add(endtime,interval 8 hour)) total_deal,
+            SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match,
             sum(volume) volume
-        FROM fullingdb.bus_tradelog
-        WHERE
-        <if test="queryDTO.startTime != null">
-            date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND
-        </if>
-        <if test="queryDTO.endTime != null">
-            date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime} AND
-        </if>
-        <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
-            t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%') AND
-        </if>
-        <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
-            t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%') AND
-        </if>
-        <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
-            t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%') AND
-        </if>
-        <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
-            t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
-        </if>
-        <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
-            t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
-        </if>
-        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
-            t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
-        </if>
-            ASCII(carnumber) <![CDATA[>]]> 127 AND LENGTH(oilclass) <![CDATA[>]]> 0
-        GROUP BY province, city, station_area_name, station_exp_name, station_exp_service_area, station_name, station_code
-            cast(date_add(t.endtime,interval 8 hour) as date), carnumber, oilcode, oilclass
+        FROM fullingdb.bus_tradelog t
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+            <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+                AND t.oilclass LIKE CONCAT('%', #{queryDTO.oilClass}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND t.oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+        </where>
+        GROUP BY cast(date_add(t.endtime,interval 8 hour) as date),
+            station_area_name, station_exp_name, station_exp_service_area, station_name, station_code
+            <if test="queryDTO.chartRadioType == '1'">
+                ,cast(date_add(t.endtime,interval 8 hour) as date) endtime
+            </if>
+            <if test="queryDTO.chartRadioType == '0'">
+                ,left(carnumber,1) province
+            </if>
         ORDER BY t.endtime
     </select>
+
+    <select id="queryCarTrafficFlowChart" resultMap="CarTrafficFlowVO">
+        SELECT
+        <if test="queryDTO.chartRadioType == 1 and queryDTO.timeRadioType == 1">
+            DATE_FORMAT(date_add( t.endtime, INTERVAL 0 HOUR ), '%Y') endtime,
+        </if>
+        <if test="queryDTO.chartRadioType == 1 and queryDTO.timeRadioType == 2">
+            DATE_FORMAT(date_add( t.endtime, INTERVAL 0 HOUR ), '%Y-%m') endtime,
+        </if>
+        <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 1">
+            case when length(trim(carnumber)) > 1 then left(carnumber,1) else '-' end carnumber,
+        </if>
+        <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 2">
+            case when length(trim(carnumber)) > 1 then CONCAT(left(carnumber,1), mid(carnumber,2,1)) else '-' end carnumber,
+        </if>
+        <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 3">
+            case when length(trim(carnumber)) > 1 then carnumber else '-' end carnumber,
+        </if>
+        <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+            t.oilclass,
+        </if>
+        <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+            t.oilcode,
+        </if>
+        station_area_name,
+        station_exp_name,
+        station_exp_service_area,
+        station_name,
+        station_code,
+        count(distinct date_add(endtime,interval 0 hour)) total_deal,
+        SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match,
+        sum(volume) volume
+        FROM fullingdb.bus_tradelog t
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND date_add(t.endtime,interval 0 hour) <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND date_add(t.endtime,interval 0 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+            <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+                AND t.oilclass LIKE CONCAT('%', #{queryDTO.oilClass}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND t.oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+        </where>
+        GROUP BY
+            station_area_name, station_exp_name, station_exp_service_area, station_name, station_code
+            <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+                ,t.oilclass
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                ,t.oilcode
+            </if>
+            <if test="queryDTO.chartRadioType == 1 and queryDTO.timeRadioType == 1">
+                ,DATE_FORMAT(date_add( t.endtime, INTERVAL 0 HOUR ), '%Y')
+            </if>
+            <if test="queryDTO.chartRadioType == 1 and queryDTO.timeRadioType == 2">
+                ,DATE_FORMAT(date_add( t.endtime, INTERVAL 0 HOUR ), '%Y-%m')
+            </if>
+            <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 1">
+                ,left(carnumber,1)
+            </if>
+            <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 2">
+                ,CONCAT(left(carnumber,1), mid(carnumber,2,1))
+            </if>
+            <if test="queryDTO.chartRadioType == 2 and queryDTO.carAttributionType == 3">
+                ,carnumber
+            </if>
+        ORDER BY t.endtime
+    </select>
+
+    <select id="queryGrowthAnalyse" resultMap="CarGrowthAnalyseBO">
+        SELECT
+            cast(date_add(t.endtime,interval 0 hour) as date) endtime, station_area_name,
+            <if test="queryDTO.growthAnalyseStationType == 0">
+                station_exp_name, station_exp_service_area,
+            </if>
+            <if test="queryDTO.growthAnalyseStationType == 1">
+                station_exp_name, station_exp_service_area, station_name, station_code,
+            </if>
+            oilclass,
+            oilcode,
+            count(distinct date_add(endtime,interval 0 hour)) total_deal,
+            SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match,
+            ROUND(sum(volume), 4) volume
+        FROM fullingdb.bus_tradelog t
+        WHERE
+            date_add(t.endtime,interval 0 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND date_add(t.endtime,interval 0 hour) <![CDATA[ <= ]]> #{queryDTO.endTime}
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+                AND t.oilclass LIKE CONCAT('%', #{queryDTO.oilClass}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND t.oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+        GROUP BY
+            cast(date_add(t.endtime,interval 0 hour) as date), station_area_name,
+            <if test="queryDTO.growthAnalyseStationType == 0">
+                station_exp_name, station_exp_service_area,
+            </if>
+            <if test="queryDTO.growthAnalyseStationType == 1">
+                station_exp_name, station_exp_service_area, station_name, station_code,
+            </if>
+            oilclass,oilcode
+        ORDER BY t.endtime
+
+    </select>
+
+    <select id="queryGrowthAnalyseByPage" resultMap="CarGrowthAnalyseBO">
+        SELECT
+        cast(date_add(t.endtime,interval 8 hour) as date) endtime,
+        <if test="queryDTO.growthAnalyseStationType == '0'">
+            station_area_name, station_exp_name, station_exp_service_area,
+        </if>
+        <if test="queryDTO.growthAnalyseStationType == '1'">
+            station_area_name, station_exp_name, station_exp_service_area, station_name, station_code,
+        </if>
+        oilclass,
+        oilcode,
+        count(distinct date_add(endtime,interval 8 hour)) total_deal,
+        SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match,
+        ROUND(sum(volume), 4) volume
+        FROM fullingdb.bus_tradelog t
+        WHERE
+        (date_add(t.endtime,interval 8 hour) <![CDATA[ >= ]]> #{queryDTO.startTime} AND date_add(t.endtime,interval 8 hour) <![CDATA[ <= ]]> #{queryDTO.endTime})
+        <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+            AND t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+        </if>
+        <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+            AND t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+        </if>
+        <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+            AND t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+        </if>
+        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+            AND t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+        </if>
+        GROUP BY
+        cast(date_add(t.endtime,interval 8 hour) as date),
+        <if test="queryDTO.growthAnalyseStationType == '0'">
+            station_area_name, station_exp_name, station_exp_service_area,
+        </if>
+        <if test="queryDTO.growthAnalyseStationType == '1'">
+            station_area_name, station_exp_name, station_exp_service_area, station_name, station_code,
+        </if>
+        oilclass,oilcode
+        ORDER BY t.endtime
+
+    </select>
+
 </mapper>

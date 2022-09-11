@@ -26,7 +26,15 @@ export const oilApi = {
   getCarTraceList: (data) => {
     return postAxios('/oil/trade/cartrace/page/query', data);
   },
-
+  getCarTrafficFlowByPage: (data) => {
+    return postAxios('/oil/trade/cartraffic/page/query', data);
+  },
+  getCarTrafficFlowChart: (data) => {
+    return postAxios('/oil/trade/cartraffic/chart/page/query', data);
+  },
+  getGrowthAnalyseByPage: (data) => {
+    return postAxios('/oil/trade/cargrowthanalyse/page/query', data);
+  },
 
 
   // 导出全部  @author 卓大

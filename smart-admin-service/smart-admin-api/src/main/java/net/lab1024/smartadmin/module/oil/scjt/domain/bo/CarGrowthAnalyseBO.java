@@ -1,15 +1,12 @@
-package net.lab1024.smartadmin.module.oil.scjt.domain.vo;
+package net.lab1024.smartadmin.module.oil.scjt.domain.bo;
 
 import lombok.Data;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Jackie
  */
 @Data
-public class CarTrafficFlowVO {
+public class CarGrowthAnalyseBO {
 
     private Integer id;
     private String province;
@@ -36,7 +33,4 @@ public class CarTrafficFlowVO {
     private String starttime;
     private String endtime;
     private String paytime;
-
-    private Map lineChart;
-    private Map barChart;
 }

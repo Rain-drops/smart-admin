@@ -20,9 +20,9 @@ export const system = [
     },
     children: [
       ...employee,
-      ...file,
-      ...userLog,
-      ...systemSetting
+      // ...file,
+      // ...userLog,
+      // ...systemSetting
     ]
   }
 ];

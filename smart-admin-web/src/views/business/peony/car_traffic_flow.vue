@@ -4,8 +4,37 @@
       <!------ 查询条件第一行 begin------->
       <Row class="smart-query-form-row">
         <span>
-          选择时间: <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="daterange" v-model="queryForm.selectTimeRange"/>
+          维度：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <RadioGroup v-model="queryForm.chartRadioType" @on-change="changeChartRadio()">
+            <Radio label="1">时间</Radio>
+            <Radio label="2">车牌归属地</Radio>
+          </RadioGroup>
         </span>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <span>
+          时间区间 :
+          <DatePicker placeholder="选择日期" split-panels style="width: 200px" type="daterange" v-model="queryForm.selectTimeRange"/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <RadioGroup v-model="queryForm.timeRadioType" @on-change="changeTimeRadio()">
+            <Radio label="1">年</Radio>
+            <Radio label="2">月</Radio>
+          </RadioGroup>
+        </span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <ButtonGroup>
+          <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
+          <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
+        </ButtonGroup>
+        <Button
+          @click="showMoreQueryConditionFlag = !showMoreQueryConditionFlag"
+          icon="md-more"
+          style="margin-left: 20px"
+          type="primary"
+          v-privilege="'peony-list-query'"
+        >{{showMoreQueryConditionFlag?'隐藏':'展开'}}</Button>
+      </Row>
+      <Row class="smart-query-form-row">
         <span>
           片区名称 :
           <Select v-model="queryForm.stationAreaName" style="width:200px" clearable filterable @on-change="getSecond">
@@ -26,40 +55,32 @@
         </span>
         <span>
           站点名称 :
-          <Select v-model="queryForm.stationName" style="width:200px" clearable filterable >
+          <Select v-model="queryForm.stationName" style="width:200px" clearable filterable>
             <Option v-for="item in mainTable.stationLinkageMenu_4" :value="item.label" :key="item.label">{{ item.label }}</Option>
           </Select>
         </span>
-
-        <ButtonGroup>
-          <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
-          <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
-        </ButtonGroup>
-        <Button
-          @click="showMoreQueryConditionFlag = !showMoreQueryConditionFlag"
-          icon="md-more"
-          style="margin-left: 20px"
-          type="primary"
-          v-privilege="'peony-list-query'"
-        >{{showMoreQueryConditionFlag?'隐藏':'展开'}}</Button>
       </Row>
-      <!------ 查询条件第一行 begin------->
       <!------ 查询条件第二行 begin------->
       <Row class="smart-query-form-row" v-show="showMoreQueryConditionFlag">
         <span>
           车牌归属地 :
-          <Input v-model="queryForm.carProvince" placeholder="请选择省份" style="width: 180px" clearable filterable/>
+          <Input v-model="queryForm.carProvince" placeholder="请选择省份" style="width: 180px" clearable filterable />
           ~~
           <Input v-model="queryForm.carCity" placeholder="请选择地区" style="width: 180px" clearable filterable/>
         </span>
-        <span>
-          油品号 :
-          <Select v-model="queryForm.oilCode" style="width:200px" clearable filterable >
-            <Option v-for="item in mainTable.oilCodeMenu" :value="item.oilCode" :key="item.oilCode">{{ item.label }}</Option>
-          </Select>
-        </span>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <span>
           车牌号码 : <Input placeholder="请输入车牌号" style="width: 180px" v-model="queryForm.carNumber"/>
+        </span>
+        <span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          油&nbsp;&nbsp;品&nbsp;&nbsp;号:
+          <Select v-model="queryForm.oilClass" style="width:100px" clearable filterable>
+            <Option v-for="item in mainTable.oilClassMenu" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
+          <Select v-model="queryForm.oilCode" style="width:100px" clearable filterable>
+            <Option v-for="item in mainTable.oilCodeMenu" :value="item.label" :key="item.label">{{ item.label }}</Option>
+          </Select>
         </span>
       </Row>
       <!------ 查询条件第二行 end------->
@@ -74,6 +95,19 @@
                 icon="ios-download-outline" size="small" type="warning" v-privilege="'peony-list-batch-export'">批量导出</Button>
       </Row>
       <!-------操作按钮行 end------->
+
+      <!--      -->
+      <div v-if="isLineChart" style="margin-top: 18px; margin-bottom: 10px">
+        <HomeCard desc="" title="">
+          <ChartLine ref="lineChartMR" :value="mainTable.lineChartData" />
+        </HomeCard>
+      </div>
+      <div v-else style="margin-top: 18px; margin-bottom: 10px">
+        <HomeCard desc="" title="">
+          <ChartBar ref="barChartMR" :value="mainTable.barChartData" />
+        </HomeCard>
+      </div>
+      <!--      -->
       <!-------表格列表 begin------->
       <Table row-key="id" :columns="mainTable.columnArray" :data="mainTable.data" :loading="mainTable.loading"
              @on-sort-change="handleSortChange" border highlight-row ref="mainTable">
@@ -97,24 +131,33 @@
       />
     </Card>
     <!-------表格列表 end------->
+
   </div>
 </template>
 
 <script>
+import HomeCard from './components/card';
+import ChartLine from './components/chart-line';
+import ChartBar from './components/chart-bar';
 import { PAGE_SIZE_OPTIONS } from '@/constants/table-page';
-import { oilApi } from '@/api/scjt-oil';
 import PeonyListForm from './components/peony-list-form';
-import {dateTimeRangeConvert} from "@/lib/util";
+import { oilApi } from "@/api/scjt-oil";
+import {dateTimeConvert, dateTimeRangeConvert, on, utils} from "@/lib/util";
 
 const PAGE_SIZE_INIT = 20;
 export default {
-  name: 'CarNumberTraceList',
+  name: 'CarTrafficFlowList',
   components: {
-    PeonyListForm
+    PeonyListForm,
+    HomeCard,
+    ChartLine,
+    ChartBar
   },
   props: {},
   data  () {
     return {
+      // 7日匹配率折线图
+      isLineChart: true,
       // 表格多选选中的元素数组
       mainTableSelectArray: [],
       /* -------------------------导出操作------------------------- */
@@ -125,19 +168,20 @@ export default {
       /* -------------------------查询条件相关数据-------------------- */
       // 搜索表单
       queryForm: {
-        // ID
+        // 1-时间; 2-车牌归属地
+        chartRadioType: "1",
+        timeRadioType: "2",
+        carAttributionType: "1",
         selectTimeRange: ['', ''],
         startTime: null,
         endTime: null,
         stationAreaName: null,
         stationExpName: null,
         stationExpServiceArea: null,
-        stationCode: null,
         stationName: null,
         carProvince: null,
         carCity: null,
         carNumber: null,
-        oilCode: null,
         pageNum: 1,
         pageSize: PAGE_SIZE_INIT,
         orders: []
@@ -164,30 +208,28 @@ export default {
           "l3": {"川南":[{"label":""}], "川北":[{"label":""}]},
           "l4": {"川南":[{"label":""}], "川北":[{"label":""}]}
         },
+        oilClassMenu: [
+          {"oilClass":"汽油", "label":"汽油"},
+          {"oilClass":"柴油", "label":"柴油"}
+        ],
         oilCodeMenu: [
-          {"oilCode":"0号", "label":"0号"},
           {"oilCode":"92", "label":"92号"},
           {"oilCode":"95", "label":"95号"},
-          {"oilCode":"98", "label":"98号"}
+          {"oilCode":"98", "label":"98号"},
+          {"oilCode":"0号", "label":"0号"}
         ],
-        baseData: {
-          "deal_num": "100",
-          "match_num": "90",
-          "match_ratio": "90%"
-        },
         // 表格数据
-        data: [
-          {
-            "car_number":"川EF48V5",
-            "in_out_num": "102"
-          }
-        ],
+        data: [],
+        lineChartData: {},
+        barChartData: {},
         // 表格列
         columnArray: [
           {
-            title: '车牌',
-            key: 'carnumber',
-            align: 'center'
+            title: '序号',
+            align: 'center',
+            render: (h, params) => {
+              return h("span", {}, params.index + 1)
+            }
           },
           {
             title: '日期',
@@ -200,60 +242,43 @@ export default {
             align: 'center'
           },
           {
-            title: '线路',
-            key: 'stationExpName',
-            align: 'center'
-          },
-          {
-            title: '站点名称',
+            title: '加油站',
             key: 'stationName',
             align: 'center'
           },
           {
-            title: '票号',
-            key: 'billno',
+            title: '油品类别',
+            key: 'oilclass',
             align: 'center'
           },
           {
-            title: '油品号',
-            key: 'oilcode',
+            title: '车牌',
+            key: 'carnumber',
             align: 'center'
           },
           {
-            title: '支付金额',
-            key: 'realamount',
-            align: 'center'
-          },
-          {
-            title: '升数',
-            key: 'volume',
-            align: 'center'
-          },
-          {
-            title: '提枪时间',
-            key: 'starttime',
-            align: 'center'
-          },
-          {
-            title: '挂枪时间',
-            key: 'endtime',
-            align: 'center'
-          },
-          {
-            title: '支付时间',
-            key: 'paytime',
+            title: '交易笔数',
+            key: 'totalDeal',
             align: 'center'
           }
-
         ]
       }
     };
   },
-  computed: {},
+  computed: {
+    // f_data: function() {
+    //   let t = this, data = this.mainTable.data;
+    //   return data.forEach(function(item, i) {
+    //     data[i].matchRatio =  parseFloat(item.isMatch / item.totalDeal).toFixed(2)
+    //   }), data
+    // }
+  },
   watch: {},
   filters: {},
-  created () {},
+  created () {
+  },
   mounted () {
+    this.initSelectTime();
     this.queryStationCascadingMenu();
     this.queryList();
   },
@@ -262,18 +287,22 @@ export default {
   beforeUpdate () {},
   updated () {},
   beforeDestroy () {},
+  destroyed () {},
+  activated () {},
   methods: {
     /* -------------------------查询相关 begin------------------------- */
     convertQueryParam () {
-
-      let startTime = '';
-      let endTime = '';
-      let carNumber = '';
+      let startTime = null; let endTime = null;
       let timeRange = dateTimeRangeConvert(this.queryForm.selectTimeRange);
       if (timeRange != null && timeRange != undefined) {
         startTime = timeRange[0];
         endTime = timeRange[1];
+      }else {
+        startTime = dateTimeConvert(new Date());
+        endTime = startTime;
       }
+
+      let carNumber = '';
       if (this.queryForm.carProvince != null && this.queryForm.carProvince != undefined && this.queryForm.carProvince != '') {
         carNumber = this.queryForm.carProvince;
       }
@@ -283,25 +312,73 @@ export default {
       if (this.queryForm.carNumber != null && this.queryForm.carNumber != undefined && this.queryForm.carNumber != '') {
         carNumber = this.queryForm.carNumber;
       }
+
       return {
         ...this.queryForm,
         startTime: startTime,
         endTime: endTime,
-        carNumber: carNumber
+        carNumber : carNumber
       };
     },
     // 查询
     queryList () {
-      this.queryTradeList();
+      this.getCarTrafficFlowChart();
     },
-    async queryTradeList(){
+    async getCarTrafficFlowChart(){
+      this.mainTable.loading = true;
       try {
         let params = this.convertQueryParam();
-        let result = await oilApi.getCarTraceList(params);
-        this.mainTable.data = result.data.list;
-        this.mainTablePage.total = result.data.total;
-      } finally {
+        let result = await oilApi.getCarTrafficFlowChart(params);
 
+        this.makeTableData(result);
+        this.makeChartData(result);
+      } finally {
+        this.mainTable.loading = false;
+      }
+    },
+    makeTableData (result) {
+      let t = this;
+      let e = result.data.tableData;
+      this.mainTablePage.total = result.data.total;
+      e.forEach(function (a, n) {
+        if ((t.queryForm.oilClass === undefined || t.queryForm.oilClass === null || t.queryForm.oilClass === '')
+          && (t.queryForm.oilCode === undefined || t.queryForm.oilCode === null || t.queryForm.oilCode === '')){
+          e[n].oilclass = "全部";
+        }else if (t.queryForm.oilClass === undefined || t.queryForm.oilClass === null || t.queryForm.oilClass === ''){
+          e[n].oilclass = a.oilcode;
+        }else if (t.queryForm.oilCode === undefined || t.queryForm.oilCode === null || t.queryForm.oilCode === ''){
+          e[n].oilclass = a.oilclass;
+        }else {
+          e[n].oilclass = a.oilclass + "--" + a.oilcode;
+        }
+
+        let carNumber = '全部';
+        if (t.queryForm.carProvince != null && t.queryForm.carProvince != undefined && t.queryForm.carProvince != '') {
+          carNumber = t.queryForm.carProvince;
+        }
+        if (t.queryForm.carCity != null && t.queryForm.carCity != undefined && t.queryForm.carCity != '') {
+          carNumber += t.queryForm.carCity;
+        }
+        if (t.queryForm.carNumber != null && t.queryForm.carNumber != undefined && t.queryForm.carNumber != '') {
+          carNumber = t.queryForm.carNumber;
+        }
+        e[n].carnumber = carNumber
+        if (a.endtime === null || a.endtime === undefined && a.endtime === '') {
+          e[n].endtime = utils.getDate(new Date(t.queryForm.startTime), 'YMD') + " ~~ " + utils.getDate(new Date(t.queryForm.endTime), 'YMD');
+        }
+      })
+
+      this.mainTable.data = e;
+    },
+    makeChartData (result) {
+      let t = this; let e = result.data;
+      if (t.queryForm.chartRadioType === "1"){
+        t.mainTable.lineChartData = e.lineData;
+        on(window, 'resize', this.$refs.lineChartMR.resize());
+      }
+      if (t.queryForm.chartRadioType === "2"){
+        t.mainTable.barChartData = e.barData;
+        on(window, 'resize', this.$refs.barChartMR.resize());
       }
     },
     async queryStationCascadingMenu(){
@@ -310,6 +387,24 @@ export default {
         let result = await oilApi.getStationLinkageMenu(param);
         this.mainTable.stationLinkageMenu = result.data;
         this.initStationLinkageMenu();
+      } finally {
+      }
+    },
+    async getCarTrafficFlowByPage(stationCode){
+      let t = this;
+      try {
+        let param = this.convertQueryParam();
+        param.endTime = dateTimeConvert(new Date())
+        param.pageNum = 1;
+        param.pageSize = 10000;
+        param.stationCode = stationCode;
+        let result = await oilApi.getCarTrafficFlowByPage(param);
+        let carTrafficFlowData = {};
+        result.data.list.forEach(function (a, n){
+          carTrafficFlowData[a.endtime] = a.totalDeal === "0" || a.totalDeal === 0 ? 0 : parseFloat(a.isMatch/a.totalDeal * 100).toFixed(2);
+        })
+        t.mainTable.carTrafficFlowData = carTrafficFlowData;
+        on(window, 'resize', this.$refs.lineChartMR.resize());
       } finally {
       }
     },
@@ -351,11 +446,25 @@ export default {
     getFourth (val) {
       this.mainTable.stationLinkageMenu_4 = this.mainTable.stationLinkageMenu.l4[val]
     },
+    changeChartRadio(){
+      if (this.queryForm.chartRadioType === "1"){
+        this.isLineChart = true
+        if (this.mainTable.lineChartData === undefined || this.mainTable.lineChartData === null || Object.keys(this.mainTable.lineChartData).length === 0){
+          this.queryList();
+        }
+      }else {
+        this.isLineChart = false
+        if (this.mainTable.barChartData === undefined || this.mainTable.barChartData === null || Object.keys(this.mainTable.barChartData).length === 0){
+          this.queryList();
+        }
+      }
+    },
+    changeTimeRadio(){},
     // 重置查询
     resetQueryList () {
       let pageSize = this.queryForm.pageSize;
       this.queryForm = {
-        station_name: null,
+        stationName: null,
         pageNum: 1,
         pageSize: pageSize,
         orders: []
@@ -402,7 +511,6 @@ export default {
       return true;
     },
     /* -------------------------批量操作 end------------------------- */
-
     /* -------------------------导入导出 begin------------------------- */
     // 导出全部
     async exportAll () {
@@ -411,7 +519,6 @@ export default {
         let params = this.convertQueryParam();
         await oilApi.exportAll(params);
       } catch (e) {
-        console.log(e);
       } finally {
         this.allExportBtnLoading = false;
       }
@@ -425,16 +532,24 @@ export default {
         this.batchExportBtnLoading = true;
         await oilApi.batchExport(this.mainTableSelectArray.map(e => e.id));
       } catch (e) {
-        console.log(e);
       } finally {
         this.batchExportBtnLoading = false;
       }
     },
     /* -------------------------导入导出 end------------------------- */
-  },
-  destroyed () {
-  },
-  activated () {
+    lookCarNumberRevise(params){
+      this.$router.push({name:"CarNumberReviseList", query:{stationCode: params.stationCode}})
+    },
+    lookNozzleNoMatchTrack(params){
+      this.$router.push({name:"NozzleNoMatchTrackList", query:{stationCode: params.stationCode}})
+    },
+    initSelectTime () {
+      let startTime = utils.getDateAddMonthStr(new Date(), -6, 'YMD');
+      let endTime = utils.getDateAddMonthStr(new Date(), 0, 'YMD')
+      this.queryForm.startTime = startTime;
+      this.queryForm.endTime = endTime;
+      this.queryForm.selectTimeRange = [startTime, endTime]
+    }
   }
 };
 </script>

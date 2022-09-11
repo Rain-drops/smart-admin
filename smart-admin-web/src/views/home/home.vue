@@ -1,5 +1,5 @@
 <template>
-  <div>
+<!--  <div>
     <Row>
       <Col>
         <HomeCard desc="Pending transaction" title="用户活跃量">
@@ -49,7 +49,7 @@
       </i-col>
     </Row>
 
-  </div>
+  </div>-->
 </template>
 
 <script>
