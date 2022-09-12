@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 @Slf4j
 @Configuration
 @EnableTransactionManagement
-@MapperScan(basePackages = {"net.lab1024.smartadmin.module.bussiness..*.*", "net.lab1024.smartadmin.module.support..*.*","net.lab1024.smartadmin.module.system..*.*"},sqlSessionTemplateRef = "primarySqlTemplate")
+@MapperScan(basePackages = {"net.lab1024.smartadmin.module.business.**.*", "net.lab1024.smartadmin.module.support.**.*","net.lab1024.smartadmin.module.system.**.*"},sqlSessionTemplateRef = "primarySqlTemplate")
 public class SmartDruidDataSourceConfig {
 
 
@@ -58,7 +58,7 @@ public class SmartDruidDataSourceConfig {
 
 
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        factoryBean.setMapperLocations(resolver.getResources("classpath*:mapper/base/**/**Mapper.xml"));
+        factoryBean.setMapperLocations(resolver.getResources("classpath*:mapper/base/**/*Mapper.xml"));
         return factoryBean.getObject();
     }
 

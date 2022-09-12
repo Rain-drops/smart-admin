@@ -20,7 +20,7 @@ spring.jackson.serialization.write-dates-as-timestamps=false
 ######################### http file #########################
 spring.servlet.multipart.max-file-size=30MB
 spring.servlet.multipart.max-request-size=30MB
-file-upload-service.path=/home/upload/
+file-upload-service.path=/home/upload/smart-admin-file
 
 ######################### database #########################
 spring.datasource.base.url=jdbc:p6spy:mysql://127.0.0.1:3306/smart-admin-dev?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC
@@ -54,7 +54,7 @@ spring.datasource.station.druid.password=123456
 spring.datasource.station.druid.login.enabled=false
 
 ######################### redis #######################################
-spring.redis.database=0
+spring.redis.database=13
 spring.redis.host=127.0.0.1
 spring.redis.port=6379
 spring.redis.timeout=10000ms
@@ -97,19 +97,17 @@ swagger.packAge=net.lab1024.smartadmin.module
 jwt.key=smart-admin-jwt-key
 
 ########################## smart reload  #########################
-smart-reload.thread-count=1
+smart-reload.thread-count=2
 smart-reload.time-interval=30
-
 ######################### cros #########################
-access-control-allow-origin=*
-
+access-control-allow-origin=preview.smartadmin.1024lab.net
 ######################### heart beat #########################
 heart-beat.delayHandlerTime=60000
 heart-beat.intervalTime=60000
 
 #########################  quartz #############################
 #\u8C03\u5EA6\u6807\u8BC6\u540D \u96C6\u7FA4\u4E2D\u6BCF\u4E00\u4E2A\u5B9E\u4F8B\u90FD\u5FC5\u987B\u4F7F\u7528\u76F8\u540C\u7684\u540D\u79F0
-spring.quartz.properties.org.quartz.scheduler.instanceName=devClusteredScheduler
+spring.quartz.properties.org.quartz.scheduler.instanceName=prodClusteredScheduler
 spring.quartz.properties.org.quartz.scheduler.instanceId=AUTO
 #\u8FDC\u7A0B\u7BA1\u7406\u76F8\u5173\u7684\u914D\u7F6E,\u5168\u90E8\u5173\u95ED
 spring.quartz.properties.org.quartz.scheduler.rmi.export=false
@@ -130,6 +128,7 @@ spring.quartz.properties.org.quartz.threadPool.threadCount=2
 spring.quartz.properties.org.quartz.threadPool.threadPriority=5
 spring.quartz.properties.org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread=true
 spring.quartz.properties.org.quartz.threadPool.threadNamePrefix=quartz
+
 spring.quartz.job-store-type=jdbc
 #ALWAYS,EMBEDDED,NEVER
 spring.quartz.jdbc.initialize-schema=NEVER

@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 @Slf4j
 @Configuration
 @EnableTransactionManagement
-@MapperScan(basePackages = {"net.lab1024.smartadmin.module.oil..*.*"},sqlSessionTemplateRef = "oilSqlTemplate")
+@MapperScan(basePackages = {"net.lab1024.smartadmin.module.oil.**.*"},sqlSessionTemplateRef = "oilSqlTemplate")
 public class OilStationDruidDataSourceConfig {
 
     @Resource

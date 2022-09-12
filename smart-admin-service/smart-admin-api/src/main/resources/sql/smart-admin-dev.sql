@@ -13,6 +13,8 @@
 
  Date: 11/09/2022 15:47:48
 */
+CREATE DATABASE IF NOT EXISTS `smart-admin-dev` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `smart-admin-dev`;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

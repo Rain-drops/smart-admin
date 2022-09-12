@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
-@MapperScan(basePackages = {"net.lab1024.smartadmin.module.*"})
+//@MapperScan(basePackages = {"net.lab1024.smartadmin.module.*"})
 public class SmartMybatisPlusConfig {
 
     /**
