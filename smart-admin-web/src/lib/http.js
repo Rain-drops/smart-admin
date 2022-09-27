@@ -7,7 +7,7 @@ export const baseUrl = config.baseUrl.apiUrl;
 export const socketBaseUrl = config.baseUrl.webSocketUrl;
 
 let axios = Axios.create({
-  baseURL: baseUrl,
+  baseURL: '/smart-admin-api',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json; charset=utf-8'
