@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
 import net.lab1024.smartadmin.module.oil.scjt.dao.StationDao;
+import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationInfoDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.entity.StationEntity;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationLinkageMenuVO;
@@ -29,6 +30,13 @@ public class StationService {
 
     public StationEntity getById(StationQueryDTO queryDTO){
         return stationDao.selectById(queryDTO.getId());
+    }
+
+    public ResponseDTO<PageResultDTO<StationVO>> add(StationInfoDTO stationInfoDTO) {
+        stationDao.add(stationInfoDTO);
+        StationQueryDTO queryDTO = new StationQueryDTO();
+        queryDTO.setStationCode(stationInfoDTO.getStationCode());
+        return queryByPage(queryDTO);
     }
 
     public ResponseDTO<PageResultDTO<StationVO>> queryByPage(StationQueryDTO queryDTO) {

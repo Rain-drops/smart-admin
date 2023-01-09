@@ -8,5 +8,4 @@ public class StationQueryDTO extends PageParamDTO {
     private Long id;
     private String stationCode;
     private String stationName;
-
 }

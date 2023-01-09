@@ -5,6 +5,7 @@ import App from './App';
 import router from './router';
 import store from './store';
 import ViewUI from 'view-design';
+// import {ViewUI, Modal} from 'view-design';
 import i18n from '@/locale';
 import config from '@/config';
 import importDirective from '@/directives';
@@ -36,6 +37,7 @@ Vue.use(Enum, { enumInfo });
 Vue.use(ViewUI, {
   i18n: (key, value) => i18n.t(key, value)
 });
+// Vue.use(Modal);
 Vue.use(JsonViewer);
 Vue.use(vClickOutside);
 

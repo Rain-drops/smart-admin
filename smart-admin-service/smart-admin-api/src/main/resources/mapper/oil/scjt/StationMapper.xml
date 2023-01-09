@@ -6,6 +6,11 @@
     <resultMap id="StationExcelVO" type="net.lab1024.smartadmin.module.oil.scjt.domain.vo.StationExcelVO"></resultMap>
 
 
+    <insert id="add" parameterType="net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationInfoDTO">
+        insert into station_list(station_name,station_code,station_status,station_ip,station_area_name,station_exp_name,station_exp_service_area)
+        values (#{stationName},#{stationCode},#{stationStatus},#{stationIp},#{stationAreaName},#{stationExpName},#{stationExpServiceArea})
+    </insert>
+
     <select id="queryByPage" resultMap="StationVO">
         select
             id,

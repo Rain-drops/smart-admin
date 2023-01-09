@@ -2,6 +2,9 @@ import { postAxios, getAxios, postDownloadAxios } from '@/lib/http';
 
 export const oilApi = {
     //
+  addStationInfo: (data) => {
+    return postAxios('/oil/station/add', data);
+  },
   getStationList: (data) => {
     return postAxios('/oil/station/page/query', data);
   },
@@ -39,10 +42,10 @@ export const oilApi = {
 
   // 导出全部  @author 卓大
   exportAll:(data)=>{
-    return postDownloadAxios('/peony/export/all',data);
+    return postDownloadAxios('/oil/station/export/all',data);
   },
   // 批量导出  @author 卓大
   batchExport: (idList) => {
-    return postDownloadAxios('/peony/export/batch', idList);
+    return postDownloadAxios('/oil/station/export/all', idList);
   },
 };

@@ -9,6 +9,7 @@
         <ButtonGroup>
           <Button @click="queryList" icon="ios-search" type="primary" v-privilege="'peony-list-query'">查询</Button>
           <Button @click="resetQueryList" icon="md-refresh" type="default" v-privilege="'peony-list-query'">重置</Button>
+          <Button @click="addFlag=true" icon="md-refresh" type="default" v-privilege="'peony-list-query'">添加</Button>
         </ButtonGroup>
       </Row>
     </Card>
@@ -18,8 +19,6 @@
       <Row class="marginBottom10">
         <Button :loading="allExportBtnLoading" @click="exportAll" class="marginLeft10 float-right"
                 icon="ios-cloud-download-outline" size="small" type="warning" v-privilege="'peony-list-export-all'">导出全部</Button>
-        <Button :loading="batchExportBtnLoading" @click="batchExport" class="marginLeft10 float-right"
-                icon="ios-download-outline" size="small" type="warning" v-privilege="'peony-list-batch-export'">批量导出</Button>
       </Row>
       <!-------操作按钮行 end------->
 
@@ -45,6 +44,42 @@
         show-total
       />
     </Card>
+<!--    <Modal v-model="addFlag" width="50%" title="添加站点">
+      <div class="ed-box">
+        <div class="box-list">
+          <div class="ed-box-title">站点编码</div>
+          <Input v-model="stationInfo.stationCode" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">站点名称</div>
+          <Input v-model="stationInfo.stationName" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">站点状态</div>
+          <Input v-model="stationInfo.stationStatus" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">站点IP</div>
+          <Input v-model="stationInfo.stationIp" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">站点片区</div>
+          <Input v-model="stationInfo.stationAreaName" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">高速区</div>
+          <Input v-model="stationInfo.stationExpName" placeholder="" clearable class="input"/>
+        </div>
+        <div class="box-list">
+          <div class="ed-box-title">服务区</div>
+          <Input v-model="stationInfo.stationExpServiceArea" placeholder="" clearable class="input"/>
+        </div>
+      </div>
+      <div slot="footer">
+        <Button @click="addFlag=false">取消</Button>
+        <Button type="primary" @click="add()">确定</Button>
+      </div>
+    </Modal>-->
     <!-------表格列表 end------->
   </div>
 </template>
@@ -79,6 +114,17 @@ export default {
         pageSize: PAGE_SIZE_INIT,
         orders: []
       },
+      stationInfo: {
+        // ID
+        stationCode: null,
+        stationName: null,
+        stationStatus: null,
+        stationIp: null,
+        stationAreaName: null,
+        stationExpName: null,
+        stationExpServiceArea: null,
+      },
+      addFlag: false,
       // 是否展示更多搜索条件
       showMoreQueryConditionFlag: false,
       /*  -------------------------表格相关数据------------------------- */
@@ -245,6 +291,20 @@ export default {
     },
     /* -------------------------批量操作 end------------------------- */
 
+    /* ------------------------- start ------------------------- */
+    async add () {
+      this.mainTable.loading = true;
+      try {
+        let params = this.stationInfo;
+        let result = await oilApi.addStationInfo(params);
+        this.mainTable.data = result.data.list;
+        this.mainTablePage.total = result.data.total;
+      } finally {
+        this.mainTable.loading = false;
+      }
+    },
+    /* ------------------------- end ------------------------- */
+
     /* -------------------------导入导出 begin------------------------- */
     // 导出全部
     async exportAll () {
@@ -276,3 +336,20 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.ed-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .box-list {
+    width: 49%;
+    margin-bottom: 10px;
+    .ed-box-title {
+      margin-bottom: 5px;
+    }
+    .input {
+      width: 100%;
+    }
+  }
+}
+</style>
