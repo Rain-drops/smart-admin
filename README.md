@@ -104,37 +104,31 @@ gitee:  [https://gitee.com/lab1024/smart-admin](https://gitee.com/lab1024/smart-
 
 ps：以上规范基础都是以团队出发，让团队开心快乐的写代码，而不是为了代码规范而规范，不喜勿喷！谢谢。
 
-#### 联系我们
+#### 问题
+1. ERROR: When "proxy" is specified in package.json it must start with either http:// or https://
 
-[1024创新实验室](https://www.1024lab.net/)
-公众号
-<table>
-<tr>
-  <td><img src="https://images.gitee.com/uploads/images/2021/0305/210257_cd96d824_5469596.jpeg"/></td>
-</tr>
-</table>
+vim vue.config.js
+devServer: {
+    proxy: 'localhost:10086'
+  },
 
-SmartAdmin微信群（**加我微信拉你入群！**）
+to
 
-<table>
-<tr>
-  <td><img src="https://images.gitee.com/uploads/images/2020/1208/181125_2ab89aa9_5469596.jpeg"/></td>
-</tr>
-</table>
-
-
+devServer: {
+	proxy: {
+	  '':{
+		target: 'localhost:10086'
+	  }
+	}
+  },
 
 
+2. ERROR: 0308010C:digital envelope routines::unsupported
 
-#### 捐赠
-开源不易，感谢捐赠
->*佛祖保佑捐赠这些人写程序永无bug，工资翻倍，迎娶白富美，走上人生巅峰！*
-<table>
-<tr>
-  <td><img src="https://images.gitee.com/uploads/images/2020/1208/181143_b6804a87_5469596.jpeg"/></td>
-</tr>
-</table>
+cmd
+set NODE_OPTIONS=--openssl-legacy-provider
 
----
-作者简介:
-[卓大](https://zhuoluodada.cn)， 1024创新实验室主任，混迹于各个技术圈，研究过计算机，熟悉点java，略懂点前端。
+
+3. ERROR: Failed to resolve loader: sass-loader
+npm i node-sass -D
+npm i sass-loader@10.x -D --legacy-peer-deps
