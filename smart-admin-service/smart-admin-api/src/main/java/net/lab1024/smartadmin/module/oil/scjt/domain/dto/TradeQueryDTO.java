@@ -4,12 +4,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import net.lab1024.smartadmin.common.domain.PageParamDTO;
 
+import java.beans.Transient;
 import java.util.Date;
 import java.util.List;
 
 @Data
 public class TradeQueryDTO extends PageParamDTO {
     private Long id;
+
+    private transient String tableName;
     private String stationCode;
     private List<String> stationCodes;
     private String stationName;

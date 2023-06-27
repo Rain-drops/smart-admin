@@ -29,43 +29,44 @@ public class OilTradeController extends BaseController {
     @Resource
     private TradeService tradeService;
 
-    @ApiOperation(value = "交易明细",notes = "@author 卓大")
-    @PostMapping("/page/query")
-    public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(@RequestBody TradeQueryDTO queryDTO) {
-        return tradeService.queryByPage(queryDTO);
-    }
 
-    @ApiOperation(value = "匹配率",notes = "@author 卓大")
+    @ApiOperation(value = "匹配率(汇总)",notes = "@author 卓大")
     @PostMapping("/matchratio/query")
     public ResponseDTO<MatchRatioVO> queryMatchRatio(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryMatchRatio(queryDTO);
     }
 
-    @ApiOperation(value = "进出站频率",notes = "@author 卓大")
+    @ApiOperation(value = "进出站频率(日期-站点-车牌，汇总)",notes = "@author 卓大")
     @PostMapping("/inoutnum/page/query")
     public ResponseDTO<PageResultDTO<CarInOutNumVO>> getInOutNumByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.getCarInOutNum(queryDTO);
     }
 
-    @ApiOperation(value = "加油站车辆识别情况跟踪",notes = "@author 卓大")
+    @ApiOperation(value = "加油站车辆识别情况跟踪(日期-站点，汇总)",notes = "@author 卓大")
     @PostMapping("/matchtrack/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryMatchTrack(queryDTO);
     }
 
-    @ApiOperation(value = "加油站油枪车辆识别情况跟踪",notes = "@author 卓大")
+    @ApiOperation(value = "加油站油枪车辆识别情况跟踪(日期-站点-油枪，汇总)",notes = "@author 卓大")
     @PostMapping("/matchtrack/nozzleno/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getNozzleNoMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryNozzleNoMatchTrack(queryDTO);
     }
 
-    @ApiOperation(value = "车辆跟踪",notes = "@author 卓大")
+    @ApiOperation(value = "车牌矫正，明细",notes = "@author 卓大")
+    @PostMapping("/page/query")
+    public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(@RequestBody TradeQueryDTO queryDTO) {
+        return tradeService.queryByPage(queryDTO);
+    }
+
+    @ApiOperation(value = "车辆跟踪，明细",notes = "@author 卓大")
     @PostMapping("/cartrace/page/query")
     public ResponseDTO<PageResultDTO<CarTraceVO>> getCarTraceByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryCarTraceByPage(queryDTO);
     }
 
-    @ApiOperation(value = "车流走势",notes = "@author 卓大")
+    @ApiOperation(value = "车流走势(明细)",notes = "@author 卓大")
     @PostMapping("/cartraffic/page/query")
     public ResponseDTO<PageResultDTO<CarTrafficFlowVO>> getCarTrafficFlowByPage(@RequestBody TradeQueryDTO queryDTO) {
         if (null == queryDTO.getEndTime()){
@@ -77,7 +78,7 @@ public class OilTradeController extends BaseController {
         return tradeService.queryCarTrafficFlowByPage(queryDTO);
     }
 
-    @ApiOperation(value = "车流走势Echarts",notes = "@author 卓大")
+    @ApiOperation(value = "车流走势Echarts(明细)",notes = "@author 卓大")
     @PostMapping("/cartraffic/chart/page/query")
     public ResponseDTO<Map<String, Object>> getCarTrafficFlowChart(@RequestBody TradeQueryDTO queryDTO) {
         if (null == queryDTO.getEndTime()){
@@ -87,7 +88,7 @@ public class OilTradeController extends BaseController {
         return tradeService.queryCarTrafficFlowChart(queryDTO);
     }
 
-    @ApiOperation(value = "同环比",notes = "@author 卓大")
+    @ApiOperation(value = "同环比，明细",notes = "@author 卓大")
     @PostMapping("/cargrowthanalyse/page/query")
     public ResponseDTO<PageResultDTO<CarGrowthAnalyseVO>> queryGrowthAnalyseByPage(@RequestBody TradeQueryDTO queryDTO) {
         if (null == queryDTO.getEndTime()){
