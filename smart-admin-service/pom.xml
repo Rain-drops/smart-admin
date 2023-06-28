@@ -17,20 +17,24 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-        <log4j.web.version>2.10.0</log4j.web.version>
+
         <smartadmin.springboot.version>2.2.5.RELEASE</smartadmin.springboot.version>
+        <mysql.version>8.0.19</mysql.version>
+        <mybatis-plus-boot.version>3.3.1</mybatis-plus-boot.version>
+        <sharding.jdbc.version>4.1.1</sharding.jdbc.version>
+        <druid.version>1.1.21</druid.version>
+        <p6spy.version>3.9.1</p6spy.version>
+
+        <log4j.web.version>2.10.0</log4j.web.version>
         <velocity.version>1.7</velocity.version>
         <velocity-engine-core.version>2.0</velocity-engine-core.version>
         <swagger.version>2.7.0</swagger.version>
         <knife4j.version>2.0.4</knife4j.version>
-        <mybatis-plus-boot.version>3.3.1</mybatis-plus-boot.version>
         <fastjson.version>1.2.73</fastjson.version>
         <guava.version>28.2-jre</guava.version>
         <aliyun-oss.version>2.7.0</aliyun-oss.version>
-        <qiniu-oss.version>[7.2.0, 7.2.99]</qiniu-oss.version>
+        <qiniu-oss.version>7.2.0</qiniu-oss.version>
         <jjwt.version>0.9.1</jjwt.version>
-        <druid.version>1.1.21</druid.version>
-        <p6spy.version>3.9.1</p6spy.version>
         <concurrentlinkedhashmap.version>1.4.2</concurrentlinkedhashmap.version>
         <easypoi.version>4.1.2</easypoi.version>
         <commons-fileupload.version>1.3.1</commons-fileupload.version>
@@ -39,7 +43,6 @@
         <commons-pool2.version>2.8.0</commons-pool2.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <okhttp.version>4.2.2</okhttp.version>
-        <mysql.version>8.0.19</mysql.version>
         <user-agent-util.version>1.21</user-agent-util.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
@@ -56,47 +59,41 @@
             </dependency>
             <!--BOM end-->
 
-            <!--springboot starter dependency begin -->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-log4j2</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-actuator</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-quartz</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-validation</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-data-redis</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-web</artifactId>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-websocket</artifactId>-->
-<!--                <version>${smartadmin.springboot.version}</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-test</artifactId>-->
-<!--                <scope>test</scope>-->
-<!--            </dependency>-->
-            <!--springboot starter dependency end -->
+            <!--mysql-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${mybatis-plus-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+                <version>4.1.1</version>
+            </dependency>
+
+            <!--druid  -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!--p6spy-->
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
             </dependency>
 
             <!--velocity begin-->
@@ -117,20 +114,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
-            </dependency>
-
-            <!--druid  -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>${druid.version}</version>
-            </dependency>
-
-            <!--p6spy-->
-            <dependency>
-                <groupId>p6spy</groupId>
-                <artifactId>p6spy</artifactId>
-                <version>${p6spy.version}</version>
             </dependency>
 
             <!-- swagger begin -->
@@ -193,13 +176,6 @@
                 <version>${easypoi.version}</version>
             </dependency>
             <!-- easy poi end -->
-
-            <!--mysql-->
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>commons-beanutils</groupId>

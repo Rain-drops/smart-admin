@@ -1,0 +1,183 @@
+######################### server ###################
+server:
+  servlet:
+    context-path: /smart-admin-api
+  port: 10086
+######################### tomcat ###################
+  tomcat:
+    basedir: /home/logs/smart-admin/tomcat-logs
+    accesslog:
+      enabled: true
+      pattern: %t %{X-Forwarded-For}i %a "%r" %s %D (%D ms)
+
+spring:
+  profiles:
+    active: @profiles.active@
+  ######################### http file #########################
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+######################### database #########################
+  datasource:
+    dynamic:
+      primary: base
+      datasource:
+        base:
+          url: jdbc:p6spy:mysql://127.0.0.1:3306/smart-admin-dev?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          initial-size: 2
+          min-idle: 1
+          max-active: 10
+          max-wait: 60000
+          time-between-eviction-runs-millis: 60000
+          min-evictable-idle-time-millis: 300000
+          driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+          filters: stat
+          druid:
+            username: druid
+            password: 123456
+            login:
+              enabled: false
+        station:
+          url: jdbc:p6spy:mysql://127.0.0.1:3306/fullingdb?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          initial-size: 2
+          min-idle: 1
+          max-active: 10
+          max-wait: 60000
+          time-between-eviction-runs-millis: 60000
+          min-evictable-idle-time-millis: 300000
+          driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+          filters: stat
+          druid:
+            username: druid
+            password: 123456
+            login:
+              enabled: false
+######################### redis #######################################
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 10000ms
+    password:
+      lettuce:
+        pool.max-active: 10
+        pool.min-idle: 5
+        pool.max-idle: 10
+        pool.max-wait: 30000ms
+#########################  quartz #############################
+  #\u8C03\u5EA6\u6807\u8BC6\u540D \u96C6\u7FA4\u4E2D\u6BCF\u4E00\u4E2A\u5B9E\u4F8B\u90FD\u5FC5\u987B\u4F7F\u7528\u76F8\u540C\u7684\u540D\u79F0
+  quartz:
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: devClusteredScheduler
+            instanceId: AUTO
+            #\u8FDC\u7A0B\u7BA1\u7406\u76F8\u5173\u7684\u914D\u7F6E,\u5168\u90E8\u5173\u95ED
+            rmi:
+              export: false
+              proxy: false
+            #\u8DF3\u8FC7quartz\u7248\u672C\u68C0\u67E5
+            skipUpdateCheck: true
+          #\u6570\u636E\u4FDD\u5B58\u65B9\u5F0F\u4E3A\u6301\u4E45\u5316
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            #\u8C03\u5EA6\u5B9E\u4F8B\u5931\u6548\u7684\u68C0\u67E5\u65F6\u95F4\u95F4\u9694, \u5F00\u53D1\u73AF\u5883\u6539\u4E3A\u4E8660\u79D2
+            clusterCheckinInterval: 60000
+            useProperties: false
+          #\u8C03\u5EA6\u7EBF\u7A0B
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 2
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+            threadNamePrefix: quartz
+    job-store-type: jdbc
+    #ALWAYS,EMBEDDED,NEVER
+    jdbc:
+      initialize-schema: NEVER
+      schema: classpath:sql/quartz_mysql_2.3.0.sql
+######################### jackson #########################
+  jackson:
+    serialization:
+      write-enums-using-to-string: true
+      write-dates-as-timestamps: false
+    deserialization:
+      read-enums-using-to-string: true
+      fail-on-unknown-properties: false
+    default-property-inclusion: always
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+########################## rest http pool  #########################
+#\u6700\u5927\u8FDE\u63A5\u6570
+http:
+  pool:
+    max-total: 10
+    #\u5355\u8DEF\u7531\u6700\u5927\u8FDE\u63A5\u6570
+    default-max-per-route: 5
+    #\u670D\u52A1\u5668\u8FD4\u56DE\u6570\u636E(response)\u7684\u65F6\u95F4
+    socket-timeout: 8000
+    #\u8FDE\u63A5\u4E0A\u670D\u52A1\u5668(\u63E1\u624B\u6210\u529F)\u7684\u65F6\u95F4
+    connect-timeout: 8000
+    #\u4ECE\u8FDE\u63A5\u6C60\u4E2D\u83B7\u53D6\u8FDE\u63A5\u7684\u8D85\u65F6\u65F6\u95F4
+    connection-request-timeout: 8000
+
+######################### mybatis\u914D\u7F6E #########################
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# mybatis-plus \u5B57\u6BB5\u9A7C\u5CF0\u81EA\u52A8\u8F6C\u6362
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:/mapper/**/**/*.xml
+  typeAliasesPackage: net.lab1024.smartadmin.*.*.domain.entity
+  global-config:
+    refresh-mapper: true
+    db-column-underline: true
+
+######################### swagger #########################
+swagger:
+  apiGroupName: smartAdmin
+  title: smartAdmin
+  description: smartAdmin
+  version: 1.0
+  serviceUrl: http://localhost:10086/smart-admin-api
+  packAge: net.lab1024.smartadmin.module
+
+######################### jwt #########################
+jwt:
+  key: smart-admin-jwt-key
+
+########################## smart reload  #########################
+smart-reload:
+  thread-count: 1
+  time-interval: 300
+
+######################### cros #########################
+access-control-allow-origin: *
+
+######################### heart beat #########################
+heart-beat:
+  delayHandlerTime: 60000
+  intervalTime: 300000
+
+######################### http file #########################
+file-upload-service:
+  path: /home/upload/
+
+#########################  quartz #############################
+#\u81EA\u52A8\u626B\u63CF\u4EFB\u52A1\u5355\u5E76\u53D1\u73B0\u6539\u52A8\u7684\u65F6\u95F4\u95F4\u9694,\u5355\u4F4D\u4E3A\u79D2
+org:
+  quartz:
+    plugin:
+      jobInitializer:
+        scanInterval: 300
