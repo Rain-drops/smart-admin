@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +34,7 @@ public class LogService {
 
     private ThreadPoolExecutor threadPoolExecutor;
 
-    @Autowired
+    @Resource
     private UserLoginLogDao userLoginLogDao;
 
     @Autowired

@@ -1,20 +1,17 @@
 package net.lab1024.smartadmin.module.oil.scjt.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
-import net.lab1024.smartadmin.module.oil.scjt.dao.StationDao;
+//import net.lab1024.smartadmin.config.DataSourceConfiguration;
 import net.lab1024.smartadmin.module.oil.scjt.dao.TradeDao;
 import net.lab1024.smartadmin.module.oil.scjt.domain.bo.CarGrowthAnalyseBO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.dto.StationQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
-import net.lab1024.smartadmin.module.oil.scjt.domain.entity.StationEntity;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import net.lab1024.smartadmin.util.SmartPageUtil;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@DS("sharding-fullingdb")
 public class TradeService {
 
     @Resource

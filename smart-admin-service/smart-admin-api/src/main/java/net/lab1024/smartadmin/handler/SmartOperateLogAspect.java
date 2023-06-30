@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -43,7 +44,7 @@ import java.lang.reflect.Method;
 @Component
 public class SmartOperateLogAspect {
 
-    @Autowired
+    @Resource
     private LogService logService;
 
     @Pointcut("execution(* net.lab1024.smartadmin.module..*Controller.*(..)))")

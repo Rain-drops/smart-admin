@@ -22,37 +22,37 @@ import java.util.Map;
 @Configuration
 public class OilStationDataSourceBean {
 
-    @Value("${spring.datasource.station.driver-class-name}")
+    @Value("${spring.datasource.dynamic.datasource.station.driver-class-name}")
     String driver;
 
-    @Value("${spring.datasource.station.url}")
+    @Value("${spring.datasource.dynamic.datasource.station.url}")
     String url;
 
-    @Value("${spring.datasource.station.username}")
+    @Value("${spring.datasource.dynamic.datasource.station.username}")
     String username;
 
-    @Value("${spring.datasource.station.password}")
+    @Value("${spring.datasource.dynamic.datasource.station.password}")
     String password;
 
-    @Value("${spring.datasource.station.initial-size}")
+    @Value("${spring.datasource.hikari.initial-size}")
     int initialSize;
 
-    @Value("${spring.datasource.station.min-idle}")
+    @Value("${spring.datasource.hikari.min-idle}")
     int minIdle;
 
-    @Value("${spring.datasource.station.max-active}")
+    @Value("${spring.datasource.hikari.max-active}")
     int maxActive;
 
-    @Value("${spring.datasource.station.max-wait}")
+    @Value("${spring.datasource.hikari.max-wait}")
     long maxWait;
 
-    @Value("${spring.datasource.station.time-between-eviction-runs-millis}")
+    @Value("${spring.datasource.hikari.time-between-eviction-runs-millis}")
     long timeBetweenEvictionRunsMillis;
 
-    @Value("${spring.datasource.station.min-evictable-idle-time-millis}")
+    @Value("${spring.datasource.hikari.min-evictable-idle-time-millis}")
     long minEvictableIdleTimeMillis;
 
-    @Value("${spring.datasource.station.filters}")
+    @Value("${spring.datasource.dynamic.filters}")
     String filters;
 
     @Value("${spring.datasource.station.druid.username}")

@@ -1,5 +1,6 @@
 package net.lab1024.smartadmin.module.system.employee;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import net.lab1024.smartadmin.common.constant.JudgeEnum;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,22 +53,22 @@ public class EmployeeService {
 
     private static final String RESET_PASSWORD = "123456";
 
-    @Autowired
+    @Resource
     private EmployeeDao employeeDao;
 
-    @Autowired
+    @Resource
     private DepartmentDao departmentDao;
 
-    @Autowired
+    @Resource
     private RoleEmployeeDao roleEmployeeDao;
 
-    @Autowired
+    @Resource
     private PositionService positionService;
 
-    @Autowired
+    @Resource
     private PositionDao positionDao;
 
-    @Autowired
+    @Resource
     private PrivilegeEmployeeService privilegeEmployeeService;
 
     /**

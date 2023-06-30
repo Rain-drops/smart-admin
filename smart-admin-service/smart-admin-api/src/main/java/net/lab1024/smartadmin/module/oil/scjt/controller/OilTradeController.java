@@ -2,6 +2,7 @@ package net.lab1024.smartadmin.module.oil.scjt.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.lab1024.smartadmin.common.anno.NoNeedLogin;
 import net.lab1024.smartadmin.common.controller.BaseController;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
@@ -56,6 +57,7 @@ public class OilTradeController extends BaseController {
 
     @ApiOperation(value = "车牌矫正，明细",notes = "@author 卓大")
     @PostMapping("/page/query")
+    @NoNeedLogin
     public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(@RequestBody TradeQueryDTO queryDTO) {
         return tradeService.queryByPage(queryDTO);
     }

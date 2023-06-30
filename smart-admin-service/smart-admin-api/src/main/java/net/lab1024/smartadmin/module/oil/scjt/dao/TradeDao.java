@@ -1,5 +1,6 @@
 package net.lab1024.smartadmin.module.oil.scjt.dao;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +19,7 @@ import java.util.List;
  */
 @Mapper
 @Component
+@DS("sharding-fullingdb")
 public interface TradeDao extends BaseMapper<TradeEntity> {
 
     /**

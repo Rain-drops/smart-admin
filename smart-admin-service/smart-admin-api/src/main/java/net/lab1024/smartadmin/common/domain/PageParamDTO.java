@@ -18,12 +18,12 @@ public class PageParamDTO {
 
     @NotNull(message = "分页参数不能为空")
     @ApiModelProperty(value = "页码(不能为空)", example = "1")
-    protected Integer pageNum;
+    protected Integer pageNum = 1;
 
     @NotNull(message = "每页数量不能为空")
     @ApiModelProperty(value = "每页数量(不能为空)", example = "10")
     @Max(value = 500, message = "每页最大为500")
-    protected Integer pageSize;
+    protected Integer pageSize = 10;
 
     @ApiModelProperty("是否查询总条数")
     protected Boolean searchCount;

@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.lab1024.smartadmin.common.anno.NoNeedLogin;
 import net.lab1024.smartadmin.common.controller.BaseController;
 import net.lab1024.smartadmin.common.domain.PageResultDTO;
 import net.lab1024.smartadmin.common.domain.ResponseDTO;
@@ -41,6 +42,7 @@ public class OilStationController extends BaseController {
 
     @ApiOperation(value = "分页查询站点信息",notes = "@author 卓大")
     @PostMapping("/page/query")
+    @NoNeedLogin
     public ResponseDTO<PageResultDTO<StationVO>> queryByPage(@RequestBody StationQueryDTO queryDTO) {
         return stationService.queryByPage(queryDTO);
     }

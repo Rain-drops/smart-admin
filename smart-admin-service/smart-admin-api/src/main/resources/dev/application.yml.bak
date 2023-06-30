@@ -8,11 +8,14 @@ server:
     basedir: /home/logs/smart-admin/tomcat-logs
     accesslog:
       enabled: true
-      pattern: %t %{X-Forwarded-For}i %a "%r" %s %D (%D ms)
+      pattern: '%t %{X-Forwarded-For}i %a "%r" %s %D (%D ms)'
+
+file-upload-service:
+  path: /home/upload/
 
 spring:
   profiles:
-    active: @profiles.active@
+    active: dev
   ######################### http file #########################
   servlet:
     multipart:
@@ -20,43 +23,70 @@ spring:
       max-request-size: 30MB
 ######################### database #########################
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      pool-name: OasisHikariCP
+      connection-test-query: SELECT 1
     dynamic:
       primary: base
+      filters: stat
       datasource:
         base:
-          url: jdbc:p6spy:mysql://127.0.0.1:3306/smart-admin-dev?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://192.168.120.132:3306/smart-admin-dev?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
           username: root
           password: root
-          initial-size: 2
-          min-idle: 1
-          max-active: 10
-          max-wait: 60000
-          time-between-eviction-runs-millis: 60000
-          min-evictable-idle-time-millis: 300000
-          driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-          filters: stat
-          druid:
-            username: druid
-            password: 123456
-            login:
-              enabled: false
+          driver-class-name: com.mysql.cj.jdbc.Driver
         station:
-          url: jdbc:p6spy:mysql://127.0.0.1:3306/fullingdb?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://192.168.120.132:3306/fullingdb?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
           username: root
           password: root
-          initial-size: 2
-          min-idle: 1
-          max-active: 10
-          max-wait: 60000
-          time-between-eviction-runs-millis: 60000
-          min-evictable-idle-time-millis: 300000
-          driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-          filters: stat
-          druid:
-            username: druid
-            password: 123456
-            login:
-              enabled: false
+          driver-class-name: com.mysql.cj.jdbc.Driver
+#    base:
+#      druid:
+#        username: druid
+#        password: 123456
+#        login:
+#          enabled: false
+#    station:
+#      druid:
+#        username: druid
+#        password: 123456
+#        login:
+#          enabled: false
+######################### sharding sphere #############################
+  # 是否开启SQL显示
+  shardingsphere:
+    props:
+      sql:
+        show: true
+     # ====================== ↓↓↓↓↓↓ 数据源配置 ↓↓↓↓↓↓ ======================
+    datasource:
+      names: sharding-fullingdb
+      # ====================== ↓↓↓↓↓↓ 配置第1个主从库 ↓↓↓↓↓↓ ======================
+      # 主库1
+      sharding-fullingdb:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        # MySQL在高版本需要指明是否进行SSL连接 解决则加上 &useSSL=false
+        jdbc-url: jdbc:mysql://192.168.120.132:3306/fullingdb?autoReconnect=true&useServerPreparedStmts=false&rewriteBatchedStatements=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        username: root
+        password: root
+  # ====================== ↓↓↓↓↓↓ 分库分表配置 ↓↓↓↓↓↓ ======================
+  sharding:
+    tables:
+      bus_tradelog:
+        actual-data-nodes: sharding-fullingdb.bus_tradelog_20230$->{5..9},sharding-fullingdb.bus_tradelog_20231$->{0..2}
+        table-strategy:
+          standard:
+            sharding-column: starttime
+            # 自定义分表算法实现类
+            precise-algorithm-class-name: net.lab1024.smartadmin.config.TimeShardingAlgorithm
+            range-algorithm-class-name: net.lab1024.smartadmin.config.TimeShardingAlgorithm
 ######################### redis #######################################
   redis:
     database: 0
@@ -64,13 +94,25 @@ spring:
     port: 6379
     timeout: 10000ms
     password:
-      lettuce:
-        pool.max-active: 10
-        pool.min-idle: 5
-        pool.max-idle: 10
-        pool.max-wait: 30000ms
+    lettuce:
+      pool:
+        max-active: 10
+        min-idle: 5
+        max-idle: 10
+        max-wait: 30000ms
+  ######################### jackson #########################
+  jackson:
+    serialization:
+      write-enums-using-to-string: true
+      write-dates-as-timestamps: false
+    deserialization:
+      read-enums-using-to-string: true
+      fail-on-unknown-properties: false
+    default-property-inclusion: always
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 #########################  quartz #############################
-  #\u8C03\u5EA6\u6807\u8BC6\u540D \u96C6\u7FA4\u4E2D\u6BCF\u4E00\u4E2A\u5B9E\u4F8B\u90FD\u5FC5\u987B\u4F7F\u7528\u76F8\u540C\u7684\u540D\u79F0
+#\u8C03\u5EA6\u6807\u8BC6\u540D \u96C6\u7FA4\u4E2D\u6BCF\u4E00\u4E2A\u5B9E\u4F8B\u90FD\u5FC5\u987B\u4F7F\u7528\u76F8\u540C\u7684\u540D\u79F0
   quartz:
     properties:
       org:
@@ -105,17 +147,7 @@ spring:
     jdbc:
       initialize-schema: NEVER
       schema: classpath:sql/quartz_mysql_2.3.0.sql
-######################### jackson #########################
-  jackson:
-    serialization:
-      write-enums-using-to-string: true
-      write-dates-as-timestamps: false
-    deserialization:
-      read-enums-using-to-string: true
-      fail-on-unknown-properties: false
-    default-property-inclusion: always
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
+
 ########################## rest http pool  #########################
 #\u6700\u5927\u8FDE\u63A5\u6570
 http:
@@ -140,9 +172,9 @@ mybatis-plus:
     map-underscore-to-camel-case: true
   mapper-locations: classpath:/mapper/**/**/*.xml
   typeAliasesPackage: net.lab1024.smartadmin.*.*.domain.entity
-  global-config:
-    refresh-mapper: true
-    db-column-underline: true
+#  global-config:
+#    refresh-mapper: true
+#    db-column-underline: true
 
 ######################### swagger #########################
 swagger:
@@ -163,21 +195,18 @@ smart-reload:
   time-interval: 300
 
 ######################### cros #########################
-access-control-allow-origin: *
+access-control-allow-origin: '*'
 
 ######################### heart beat #########################
 heart-beat:
   delayHandlerTime: 60000
   intervalTime: 300000
 
-######################### http file #########################
-file-upload-service:
-  path: /home/upload/
-
-#########################  quartz #############################
+######################### heart beat #########################
 #\u81EA\u52A8\u626B\u63CF\u4EFB\u52A1\u5355\u5E76\u53D1\u73B0\u6539\u52A8\u7684\u65F6\u95F4\u95F4\u9694,\u5355\u4F4D\u4E3A\u79D2
 org:
   quartz:
     plugin:
       jobInitializer:
         scanInterval: 300
+
