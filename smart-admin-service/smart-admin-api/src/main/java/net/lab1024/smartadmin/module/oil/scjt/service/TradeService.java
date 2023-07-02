@@ -76,7 +76,10 @@ public class TradeService {
     public ResponseDTO<PageResultDTO<MatchTrackVO>> queryMatchTrack(TradeQueryDTO queryDTO) {
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        page.setSearchCount(false);
+        Long total = tradeDao.queryMatchTrackByPageCount(queryDTO);
         IPage<MatchTrackVO> voList = tradeDao.queryMatchTrackByPage(page, queryDTO);
+        voList.setTotal(total);
         PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }

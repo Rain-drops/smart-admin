@@ -51,6 +51,7 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @return
      */
     IPage<MatchTrackVO> queryMatchTrackByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+    Long queryMatchTrackByPageCount(@Param("queryDTO") TradeQueryDTO queryDTO);
 
     /**
      * 加油站油枪车辆识别情况跟踪

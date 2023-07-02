@@ -70,12 +70,12 @@ public class OilTradeController extends BaseController {
     @ApiOperation(value = "加油站油枪车辆识别情况跟踪(日期-站点-油枪，汇总)",notes = "@author 卓大")
     @PostMapping("/matchtrack/nozzleno/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getNozzleNoMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
-//        if (null == queryDTO.getStartTime()){
-//            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
-//        }
-//        if (null == queryDTO.getEndTime()){
-//            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
-//        }
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.queryNozzleNoMatchTrack(queryDTO);
     }
 
