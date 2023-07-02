@@ -19,7 +19,6 @@ import java.util.List;
  */
 @Mapper
 @Component
-@DS("sharding-fullingdb")
 public interface TradeDao extends BaseMapper<TradeEntity> {
 
     /**
@@ -60,6 +59,8 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @return
      */
     IPage<MatchTrackVO> queryNozzleNoMatchTrackByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+    Long queryNozzleNoMatchTrackByPageCount(@Param("queryDTO") TradeQueryDTO queryDTO);
+
 
     /**
      * 车牌跟踪

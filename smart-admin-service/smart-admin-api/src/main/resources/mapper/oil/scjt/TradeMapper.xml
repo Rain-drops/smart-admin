@@ -228,7 +228,7 @@
         SELECT
         station_code, station_name, nozzleno,
         count(distinct endtime) total_deal,
-        SUM(case when length(trim(carnumber)) > 1 then 1 else 0 end) is_match
+        sum(case when length(carnumber) > 1 then 1 else 0 end) is_match
         FROM
         fullingdb.bus_tradelog
         <where>
@@ -257,8 +257,40 @@
                 AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
             </if>
         </where>
-        GROUP BY
-            station_area_name, station_exp_name, station_exp_service_area, station_code, station_name, nozzleno
+        GROUP BY station_code, station_name, nozzleno
+        ORDER BY station_code, station_name, nozzleno
+    </select>
+    <select id="queryNozzleNoMatchTrackByPageCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(DISTINCT CONCAT(station_code, station_name, nozzleno))
+        FROM
+            fullingdb.bus_tradelog
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND endtime <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND endtime <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+        </where>
     </select>
 
     <!-- 车牌跟踪 -->

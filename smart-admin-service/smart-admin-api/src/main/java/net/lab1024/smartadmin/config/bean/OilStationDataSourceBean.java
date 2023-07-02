@@ -5,7 +5,13 @@ import com.alibaba.druid.filter.stat.StatFilter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.util.JdbcConstants;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import net.lab1024.smartadmin.config.TimeShardingAlgorithm;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -17,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 @Configuration
@@ -66,30 +73,31 @@ public class OilStationDataSourceBean {
 
     @Bean(name = "oilDataSource")
     @Qualifier("oilDataSource")
-    public DataSource oilStationDruidDataSource() {
-        DruidDataSource druidDataSource = new DruidDataSource();
-        druidDataSource.setDbType(JdbcConstants.MYSQL);
-        druidDataSource.setDriverClassName(driver);
-        druidDataSource.setUrl(url);
-        druidDataSource.setUsername(username);
-        druidDataSource.setPassword(password);
-        druidDataSource.setInitialSize(initialSize);
-        druidDataSource.setMinIdle(minIdle);
-        druidDataSource.setMaxActive(maxActive);
-        druidDataSource.setMaxWait(maxWait);
-        druidDataSource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
-        druidDataSource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
-        try {
-            druidDataSource.setFilters(filters);
-            ArrayList<Filter> arrayList = new ArrayList<>();
-            arrayList.add(oilStationLogSlowSql());
-            druidDataSource.setProxyFilters(arrayList);
-            druidDataSource.init();
-        } catch (SQLException e) {
-            log.error("初始化数据源出错", e);
-        }
+    public DataSource oilStationDruidDataSource() throws Exception{
+//        DruidDataSource druidDataSource = new DruidDataSource();
+//
+//        druidDataSource.setDbType(JdbcConstants.MYSQL);
+//        druidDataSource.setDriverClassName(driver);
+//        druidDataSource.setUrl(url);
+//        druidDataSource.setUsername(username);
+//        druidDataSource.setPassword(password);
+//        druidDataSource.setInitialSize(initialSize);
+//        druidDataSource.setMinIdle(minIdle);
+//        druidDataSource.setMaxActive(maxActive);
+//        druidDataSource.setMaxWait(maxWait);
+//        druidDataSource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+//        druidDataSource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+//        try {
+//            druidDataSource.setFilters(filters);
+//            ArrayList<Filter> arrayList = new ArrayList<>();
+//            arrayList.add(oilStationLogSlowSql());
+//            druidDataSource.setProxyFilters(arrayList);
+//            druidDataSource.init();
+//        } catch (SQLException e) {
+//            log.error("初始化数据源出错", e);
+//        }
 
-        return druidDataSource;
+        return getShardingDataSource();
     }
     public StatFilter oilStationLogSlowSql() {
         StatFilter statFilter = new StatFilter();
@@ -113,5 +121,38 @@ public class OilStationDataSourceBean {
         initParameters.put("resetEnable", "false");
         servletRegistrationBean.setInitParameters(initParameters);
         return servletRegistrationBean;
+    }
+
+    DataSource getShardingDataSource() throws SQLException {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        // 配置分表规则
+        shardingRuleConfig.getTableRuleConfigs().add(getRealTableRuleConfiguration());
+//        shardingRuleConfig.getBindingTableGroups().add("bus_tradelog");
+
+        Properties props = new Properties();
+        // 配置shardingsphere是否打印日志
+        props.setProperty("sql.show", "true");
+        // 创建数据源
+        return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, props);
+    }
+
+    /** 返回 bus_tradelog 表的分表规则配置 */
+    TableRuleConfiguration getRealTableRuleConfiguration() {
+        // 指定数据库及表配置规则
+        TableRuleConfiguration result = new TableRuleConfiguration("bus_tradelog", "sharding-fullingdb.bus_tradelog_20230$->{5..9},sharding-fullingdb.bus_tradelog_20231$->{0..2}");
+        // 指定分表字段及分表规则类  TaTable2Algorithm为自定义分表规则类
+        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("starttime", new TimeShardingAlgorithm()));
+        return result;
+    }
+
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>();
+        DruidDataSource dbs = new DruidDataSource();
+        dbs.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dbs.setUrl(url);
+        dbs.setUsername(username);
+        dbs.setPassword(password);
+        result.put("sharding-fullingdb", dbs);
+        return result;
     }
 }

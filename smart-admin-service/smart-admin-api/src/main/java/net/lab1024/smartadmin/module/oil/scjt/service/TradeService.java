@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@DS("sharding-fullingdb")
 public class TradeService {
 
     @Resource
@@ -34,11 +33,11 @@ public class TradeService {
      */
     public ResponseDTO<PageResultDTO<CarInOutNumVO>> getCarInOutNum(TradeQueryDTO queryDTO) {
         // 站 明细
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        page.setSearchCount(false);
         IPage<CarInOutNumVO> voList = tradeDao.getCarInOutNum(page, queryDTO);
+        voList.setTotal(10);
         PageResultDTO<CarInOutNumVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
@@ -50,9 +49,6 @@ public class TradeService {
      */
     public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(TradeQueryDTO queryDTO) {
         // 站 明细
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
-
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         IPage<TradeVO> voList = tradeDao.queryByPage(page, queryDTO);
         PageResultDTO<TradeVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
@@ -65,9 +61,6 @@ public class TradeService {
      * @return
      */
     public ResponseDTO<MatchRatioVO> queryMatchRatio(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
-
         MatchRatioVO vo = tradeDao.queryMatchRatio(queryDTO);
         if (vo.getTotalDeal() > 0){
             vo.setMatchRatio(String.format("%.2f", vo.getIsMatch()*1D / vo.getTotalDeal()*1D * 100));
@@ -81,8 +74,6 @@ public class TradeService {
      * @return
      */
     public ResponseDTO<PageResultDTO<MatchTrackVO>> queryMatchTrack(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         IPage<MatchTrackVO> voList = tradeDao.queryMatchTrackByPage(page, queryDTO);
@@ -96,11 +87,12 @@ public class TradeService {
      * @return
      */
     public ResponseDTO<PageResultDTO<MatchTrackVO>> queryNozzleNoMatchTrack(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        page.setSearchCount(false);
+        Long total = tradeDao.queryNozzleNoMatchTrackByPageCount(queryDTO);
         IPage<MatchTrackVO> voList = tradeDao.queryNozzleNoMatchTrackByPage(page, queryDTO);
+        voList.setTotal(total);
         PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
@@ -111,8 +103,6 @@ public class TradeService {
      * @return
      */
     public ResponseDTO<PageResultDTO<CarTraceVO>> queryCarTraceByPage(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         IPage<CarTraceVO> voList = tradeDao.queryCarTraceByPage(page, queryDTO);
@@ -126,8 +116,6 @@ public class TradeService {
      * @return
      */
     public ResponseDTO<PageResultDTO<CarTrafficFlowVO>> queryCarTrafficFlowByPage(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         IPage<CarTrafficFlowVO> voList = tradeDao.queryCarTrafficFlowByPage(page, queryDTO);
@@ -137,8 +125,6 @@ public class TradeService {
     }
 
     public ResponseDTO<Map<String, Object>> queryCarTrafficFlowChart(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         HashMap<String, Object> resultData = new HashMap<>();
 
@@ -166,8 +152,6 @@ public class TradeService {
     }
 
     public ResponseDTO<PageResultDTO<CarGrowthAnalyseVO>> queryGrowthAnalyseByPage(TradeQueryDTO queryDTO) {
-        String tableName = "bus_tradelog_"+queryDTO.getTableName();
-        queryDTO.setTableName(tableName);
 
         Date startTime = queryDTO.getStartTime(), endTime = queryDTO.getEndTime();
         List<CarGrowthAnalyseBO> voListThisDay = new ArrayList<>();

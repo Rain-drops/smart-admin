@@ -34,24 +34,48 @@ public class OilTradeController extends BaseController {
     @ApiOperation(value = "匹配率(汇总)",notes = "@author 卓大")
     @PostMapping("/matchratio/query")
     public ResponseDTO<MatchRatioVO> queryMatchRatio(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.queryMatchRatio(queryDTO);
     }
 
     @ApiOperation(value = "进出站频率(日期-站点-车牌，汇总)",notes = "@author 卓大")
     @PostMapping("/inoutnum/page/query")
     public ResponseDTO<PageResultDTO<CarInOutNumVO>> getInOutNumByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.getCarInOutNum(queryDTO);
     }
 
     @ApiOperation(value = "加油站车辆识别情况跟踪(日期-站点，汇总)",notes = "@author 卓大")
     @PostMapping("/matchtrack/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.queryMatchTrack(queryDTO);
     }
 
     @ApiOperation(value = "加油站油枪车辆识别情况跟踪(日期-站点-油枪，汇总)",notes = "@author 卓大")
     @PostMapping("/matchtrack/nozzleno/page/query")
     public ResponseDTO<PageResultDTO<MatchTrackVO>> getNozzleNoMatchTrackByPage(@RequestBody TradeQueryDTO queryDTO) {
+//        if (null == queryDTO.getStartTime()){
+//            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+//        }
+//        if (null == queryDTO.getEndTime()){
+//            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+//        }
         return tradeService.queryNozzleNoMatchTrack(queryDTO);
     }
 
@@ -59,12 +83,24 @@ public class OilTradeController extends BaseController {
     @PostMapping("/page/query")
     @NoNeedLogin
     public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.queryByPage(queryDTO);
     }
 
     @ApiOperation(value = "车辆跟踪，明细",notes = "@author 卓大")
     @PostMapping("/cartrace/page/query")
     public ResponseDTO<PageResultDTO<CarTraceVO>> getCarTraceByPage(@RequestBody TradeQueryDTO queryDTO) {
+        if (null == queryDTO.getStartTime()){
+            queryDTO.setStartTime(DateUtils.addWeeks(new Date(),-1));
+        }
+        if (null == queryDTO.getEndTime()){
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
+        }
         return tradeService.queryCarTraceByPage(queryDTO);
     }
 
@@ -73,7 +109,7 @@ public class OilTradeController extends BaseController {
     public ResponseDTO<PageResultDTO<CarTrafficFlowVO>> getCarTrafficFlowByPage(@RequestBody TradeQueryDTO queryDTO) {
         if (null == queryDTO.getEndTime()){
             queryDTO.setStartTime(DateUtils.addDays(new Date(), -7));
-            queryDTO.setEndTime(new Date());
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
         }else {
             queryDTO.setStartTime(DateUtils.addDays(queryDTO.getEndTime(), -7));
         }
@@ -85,7 +121,7 @@ public class OilTradeController extends BaseController {
     public ResponseDTO<Map<String, Object>> getCarTrafficFlowChart(@RequestBody TradeQueryDTO queryDTO) {
         if (null == queryDTO.getEndTime()){
             queryDTO.setStartTime(DateUtils.addMonths(new Date(), -6));
-            queryDTO.setEndTime(new Date());
+            queryDTO.setEndTime(DateUtils.addDays(new Date(),1));
         }
         return tradeService.queryCarTrafficFlowChart(queryDTO);
     }
