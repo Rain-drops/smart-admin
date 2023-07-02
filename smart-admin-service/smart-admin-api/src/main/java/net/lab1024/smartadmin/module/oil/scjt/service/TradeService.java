@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,8 +39,21 @@ public class TradeService {
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         page.setSearchCount(false);
+        Long total = tradeDao.getCarInOutNumCount(queryDTO);
         IPage<CarInOutNumVO> voList = tradeDao.getCarInOutNum(page, queryDTO);
-        voList.setTotal(10);
+        List<CarInOutNumVO> records = voList.getRecords();
+        Map<String, Long> collect = records.stream().filter(distinctByKey(e -> e.getFrequency())).collect(Collectors.groupingBy(e -> e.getCarnumber(), Collectors.counting()));
+
+        records.clear();
+        for (String carnumber : collect.keySet()){
+            CarInOutNumVO vo = new CarInOutNumVO();
+            records.add(vo);
+            vo.setCarnumber(carnumber);
+            vo.setFrequency(String.valueOf(collect.get(carnumber)));
+        }
+
+        voList.setRecords(records);
+        voList.setTotal(total);
         PageResultDTO<CarInOutNumVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
@@ -345,5 +361,10 @@ public class TradeService {
 
 
         return ResponseDTO.succData(SmartPageUtil.convert2PageResult(new Page<>().setRecords(resultVO)));
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 }

@@ -146,44 +146,93 @@
     </select>
 
     <!-- 进出站频次 -->
-    <select id="getCarInOutNum" resultMap="CarInOutNumVO">
+<!--
+    <select id="getCarInOutNum_Bak" resultMap="CarInOutNumVO">
         SELECT
-            carnumber, count( key1 ) frequency
+        carnumber, count( key1 ) frequency
         FROM
-            (
-            SELECT
-                DISTINCT carnumber, endtime, key1
-            FROM
-                (
-                SELECT
-                    carnumber, date( date_add( endtime, INTERVAL 8 HOUR ) ) endtime, CONCAT( carnumber, ' ', date( date_add( endtime, INTERVAL 8 HOUR ) ) ) key1
-                FROM
-                    fullingdb.bus_tradelog
-                WHERE
-                    <if test="queryDTO.startTime != null">
-                        endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
-                    </if>
-                    <if test="queryDTO.endTime != null">
-                        endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
-                    </if>
-                    <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
-                        station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
-                    </if>
-                    <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
-                        station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
-                    </if>
-                    <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
-                        carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
-                    </if>
-                    ASCII( carnumber ) > 127
-                ) a
-            ) b
+        (
+        SELECT
+        DISTINCT carnumber, endtime, key1
+        FROM
+        (
+        SELECT
+        carnumber, date( date_add( endtime, INTERVAL 8 HOUR ) ) endtime, CONCAT( carnumber, ' ', date( date_add( endtime, INTERVAL 8 HOUR ) ) ) key1
+        FROM
+        fullingdb.bus_tradelog
+        WHERE
+        <if test="queryDTO.startTime != null">
+            endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+        </if>
+        <if test="queryDTO.endTime != null">
+            endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+        </if>
+        <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+            station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+        </if>
+        <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+            station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+        </if>
+        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+            carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+        </if>
+        ASCII( carnumber ) > 127
+        ) a
+        ) b
         GROUP BY carnumber
         <if test="queryDTO.minFrequency != null and queryDTO.minFrequency != '' and queryDTO.maxFrequency != null and queryDTO.maxFrequency != ''">
             HAVING COUNT( key1 ) <![CDATA[ >= ]]> #{queryDTO.minFrequency} AND COUNT( key1 ) <![CDATA[ <= ]]> #{queryDTO.maxFrequency}
         </if>
 
     </select>
+-->
+    <select id="getCarInOutNum" resultMap="CarInOutNumVO">
+        SELECT
+            carnumber, date( date_add( endtime, INTERVAL 8 HOUR ) ) endtime, CONCAT( carnumber, ' ', date( date_add( endtime, INTERVAL 8 HOUR ) ) ) frequency
+        FROM
+            fullingdb.bus_tradelog
+        WHERE
+            <if test="queryDTO.startTime != null">
+                endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+            </if>
+            <if test="queryDTO.endTime != null">
+                endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+            </if>
+            ASCII( carnumber ) > 127
+    </select>
+    <select id="getCarInOutNumCount" resultType="java.lang.Long">
+        SELECT
+            count(carnumber)
+        FROM
+        fullingdb.bus_tradelog
+        WHERE
+        <if test="queryDTO.startTime != null">
+            endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+        </if>
+        <if test="queryDTO.endTime != null">
+            endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+        </if>
+        <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+            station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+        </if>
+        <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+            station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+        </if>
+        <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+            carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+        </if>
+        ASCII( carnumber ) > 127
+    </select>
+
 
     <!-- 车辆识别情况跟踪/匹配率变化 -->
     <select id="queryMatchTrackByPage" resultMap="MatchTrackVO">

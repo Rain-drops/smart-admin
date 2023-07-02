@@ -28,6 +28,7 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @return StationVO
      */
     IPage<CarInOutNumVO> getCarInOutNum(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+    Long getCarInOutNumCount(@Param("queryDTO") TradeQueryDTO queryDTO);
 
     /**
      * 明细查询
