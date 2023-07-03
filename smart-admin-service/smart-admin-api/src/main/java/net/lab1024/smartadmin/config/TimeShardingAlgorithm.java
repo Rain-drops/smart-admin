@@ -17,7 +17,7 @@ import java.util.Date;
  * 分片算法，按月分片
  * @author
  */
-public class TimeShardingAlgorithm implements PreciseShardingAlgorithm<Date>, RangeShardingAlgorithm<Date> {
+public class TimeShardingAlgorithm implements RangeShardingAlgorithm<Date>, PreciseShardingAlgorithm<Date> {
 
     /** 时间格式 */
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -46,26 +46,6 @@ public class TimeShardingAlgorithm implements PreciseShardingAlgorithm<Date>, Ra
      * @param rangeShardingValue
      * @return
      */
-//    @Override
-//    public Collection<String> doSharding(Collection<String> collection, RangeShardingValue<String> rangeShardingValue) {
-//        System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-//        Range<String> valueRange = rangeShardingValue.getValueRange();
-//        String lower = valueRange.lowerEndpoint();
-//        String upper = valueRange.upperEndpoint();
-//
-//        LocalDate start = LocalDate.parse(lower, DATE_TIME_FORMATTER);
-//        LocalDate end = LocalDate.parse(upper, DATE_TIME_FORMATTER);
-//
-//        Collection<String> tables = new ArrayList<>();
-//        while (start.compareTo(end) <= 0) {
-//            tables.add(buildShardingTable(rangeShardingValue.getLogicTableName(), start.format(DATE_TIME_FORMATTER)));
-//            start = start.plusMonths(1L);
-//        }
-//
-//        // collection配置的数据节点表，这里是排除不存在配置中的表
-//        collection.retainAll(tables);
-//        return collection;
-//    }
     @Override
     public Collection<String> doSharding(Collection<String> collection, RangeShardingValue<Date> rangeShardingValue) {
         System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");

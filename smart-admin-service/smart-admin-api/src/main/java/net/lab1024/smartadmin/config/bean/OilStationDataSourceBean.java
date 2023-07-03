@@ -141,7 +141,7 @@ public class OilStationDataSourceBean {
         // 指定数据库及表配置规则
         TableRuleConfiguration result = new TableRuleConfiguration("bus_tradelog", "sharding-fullingdb.bus_tradelog_20230$->{5..9},sharding-fullingdb.bus_tradelog_20231$->{0..2}");
         // 指定分表字段及分表规则类  TaTable2Algorithm为自定义分表规则类
-        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("starttime", new TimeShardingAlgorithm()));
+        result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("endtime", new TimeShardingAlgorithm(), new TimeShardingAlgorithm()));
         return result;
     }
 

@@ -20,7 +20,10 @@ public class TradeEntity {
     private String realamount;
     private String price;
     private String starttime;
-    private String endtime;
+    private String starttimesct;
+    private String start_date;
+    private String endtimesct;
+    private String end_date;
     private String startread;
     private String endread;
     private String carnumber;
