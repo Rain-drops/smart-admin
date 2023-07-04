@@ -1,7 +1,7 @@
 package net.lab1024.smartadmin.config;
 
+import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Range;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
@@ -36,7 +36,7 @@ public class TimeShardingAlgorithm implements RangeShardingAlgorithm<Date>, Prec
      */
     @Override
     public String doSharding(Collection<String> collection, PreciseShardingValue<Date> preciseShardingValue) {
-        System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+        System.out.println("精确分片");
         return buildShardingTable(preciseShardingValue.getLogicTableName(), preciseShardingValue.getValue());
     }
 
@@ -48,7 +48,7 @@ public class TimeShardingAlgorithm implements RangeShardingAlgorithm<Date>, Prec
      */
     @Override
     public Collection<String> doSharding(Collection<String> collection, RangeShardingValue<Date> rangeShardingValue) {
-        System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+        System.out.println("范围分片");
         Range<Date> valueRange = rangeShardingValue.getValueRange();
         Date start = valueRange.lowerEndpoint();
         Date end = valueRange.upperEndpoint();
@@ -56,9 +56,8 @@ public class TimeShardingAlgorithm implements RangeShardingAlgorithm<Date>, Prec
         Collection<String> tables = new ArrayList<>();
         while (start.compareTo(end) <= 0) {
             tables.add(buildShardingTable(rangeShardingValue.getLogicTableName(), start));
-            start = DateUtils.addMonths(start, 1);
+            start = DateUtil.beginOfMonth(DateUtil.offsetMonth(start, 1));
         }
-
         // collection配置的数据节点表，这里是排除不存在配置中的表
         collection.retainAll(tables);
         return collection;
@@ -71,9 +70,9 @@ public class TimeShardingAlgorithm implements RangeShardingAlgorithm<Date>, Prec
      * @return
      */
     private String buildShardingTable(String logicTableName, Date date) {
-        System.out.println(logicTableName + " ==== " + date);
         String dateStr = DATE_TIME_FORMAT.format(date);
         StringBuffer stringBuffer = new StringBuffer(logicTableName).append("_").append(dateStr, 0, 6);
+        System.out.println(logicTableName + " ==== " + stringBuffer.toString());
         return stringBuffer.toString();
     }
 }

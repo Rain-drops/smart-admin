@@ -129,8 +129,10 @@ public class OilTradeController extends BaseController {
     @ApiOperation(value = "同环比，明细",notes = "@author 卓大")
     @PostMapping("/cargrowthanalyse/page/query")
     public ResponseDTO<PageResultDTO<CarGrowthAnalyseVO>> queryGrowthAnalyseByPage(@RequestBody TradeQueryDTO queryDTO) {
-        if (null == queryDTO.getEndTime()){
+        if (null == queryDTO.getStartTime()){
             queryDTO.setStartTime(new Date());
+        }
+        if (null == queryDTO.getEndTime()){
             queryDTO.setEndTime(DateUtils.addDays(new Date(), 1));
         }else {
             queryDTO.setEndTime(DateUtils.addDays(queryDTO.getEndTime(), 1));

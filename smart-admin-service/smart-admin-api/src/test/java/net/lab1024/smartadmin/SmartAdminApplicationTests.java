@@ -29,19 +29,23 @@ public class SmartAdminApplicationTests {
     @Test
     public void test(){
         TradeQueryDTO queryDTO = new TradeQueryDTO();
-        queryDTO.setStartTime(DateUtils.addMonths(new Date(), -1));
-        queryDTO.setEndTime(DateUtils.addDays(new Date(), 1));
-        queryDTO.setStationAreaName("川南片区");
-        queryDTO.setChartRadioType("1");
+        queryDTO.setStartTime(new Date()); queryDTO.setEndTime(DateUtils.addDays(new Date(), 1));
+//        queryDTO.setStartTime(DateUtils.addMonths(new Date(), -1)); queryDTO.setEndTime(DateUtils.addDays(new Date(), 1));
+
+//        queryDTO.setStationAreaName("川南片区");
 //        queryDTO.setChartRadioType("0");
+//        queryDTO.setChartRadioType("1");
+
 //        queryDTO.setCarAttributionType("1");
-         queryDTO.setCarAttributionType("2");
+//         queryDTO.setCarAttributionType("2");
         // queryDTO.setCarAttributionType("3");
 
 //        queryDTO.setTimeRadioType("1");
-        queryDTO.setTimeRadioType("2");
+//        queryDTO.setTimeRadioType("2");
 
-        queryDTO.setGrowthAnalyseStationType("0");
+//        queryDTO.setGrowthAnalyseStationType("0");
+        queryDTO.setGrowthAnalyseStationType("1");
+        queryDTO.setCarNumber("");
 
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         page.setSearchCount(false);
@@ -64,8 +68,8 @@ public class SmartAdminApplicationTests {
 
 //        tradeDao.queryCarTrafficFlowChart(queryDTO);
 
-//        tradeDao.queryGrowthAnalyse(queryDTO);
+        tradeDao.queryGrowthAnalyse(queryDTO);
 
-        tradeDao.queryGrowthAnalyseByPage(page, queryDTO);
+//        tradeDao.queryGrowthAnalyseByPage(page, queryDTO);
     }
 }

@@ -45,6 +45,7 @@
         <okhttp.version>4.2.2</okhttp.version>
         <user-agent-util.version>1.21</user-agent-util.version>
         <lombok.version>1.18.8</lombok.version>
+        <hutool.version>5.7.2</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -218,6 +219,11 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
         </dependencies>

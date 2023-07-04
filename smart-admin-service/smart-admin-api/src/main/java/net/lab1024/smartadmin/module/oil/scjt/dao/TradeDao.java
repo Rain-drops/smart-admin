@@ -79,6 +79,7 @@ public interface TradeDao extends BaseMapper<TradeEntity> {
      * @return
      */
     IPage<CarTrafficFlowVO> queryCarTrafficFlowByPage(Page page, @Param("queryDTO") TradeQueryDTO queryDTO);
+    Long queryCarTrafficFlowByPageCount(@Param("queryDTO") TradeQueryDTO queryDTO);
 
     List<CarTrafficFlowVO> queryCarTrafficFlowChart(@Param("queryDTO") TradeQueryDTO queryDTO);
     /**

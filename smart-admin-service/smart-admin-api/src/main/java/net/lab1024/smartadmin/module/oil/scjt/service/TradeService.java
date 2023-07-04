@@ -1,5 +1,7 @@
 package net.lab1024.smartadmin.module.oil.scjt.service;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +15,7 @@ import net.lab1024.smartadmin.module.oil.scjt.domain.dto.TradeQueryDTO;
 import net.lab1024.smartadmin.module.oil.scjt.domain.vo.*;
 import net.lab1024.smartadmin.util.SmartPageUtil;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +33,19 @@ public class TradeService {
     private TradeDao tradeDao;
 
     /**
+     * 明细
+     * @param queryDTO
+     * @return
+     */
+    public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(TradeQueryDTO queryDTO) {
+        // 站 明细
+        Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        IPage<TradeVO> voList = tradeDao.queryByPage(page, queryDTO);
+        PageResultDTO<TradeVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
+        return ResponseDTO.succData(pageResultDTO);
+    }
+
+    /**
      * 出入站频次
      * @param queryDTO
      * @return
@@ -37,10 +53,15 @@ public class TradeService {
     public ResponseDTO<PageResultDTO<CarInOutNumVO>> getCarInOutNum(TradeQueryDTO queryDTO) {
         // 站 明细
 
+        Long total = 10000L;
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         page.setSearchCount(false);
-        Long total = tradeDao.getCarInOutNumCount(queryDTO);
         IPage<CarInOutNumVO> voList = tradeDao.getCarInOutNum(page, queryDTO);
+        try {
+            total = tradeDao.getCarInOutNumCount(queryDTO);
+        } catch (Exception e) {
+            log.error("", e);
+        }
         List<CarInOutNumVO> records = voList.getRecords();
         Map<String, Long> collect = records.stream().filter(distinctByKey(e -> e.getFrequency())).collect(Collectors.groupingBy(e -> e.getCarnumber(), Collectors.counting()));
 
@@ -55,19 +76,6 @@ public class TradeService {
         voList.setRecords(records);
         voList.setTotal(total);
         PageResultDTO<CarInOutNumVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
-        return ResponseDTO.succData(pageResultDTO);
-    }
-
-    /**
-     * 明细
-     * @param queryDTO
-     * @return
-     */
-    public ResponseDTO<PageResultDTO<TradeVO>> queryByPage(TradeQueryDTO queryDTO) {
-        // 站 明细
-        Page page = SmartPageUtil.convert2QueryPage(queryDTO);
-        IPage<TradeVO> voList = tradeDao.queryByPage(page, queryDTO);
-        PageResultDTO<TradeVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
 
@@ -91,10 +99,15 @@ public class TradeService {
      */
     public ResponseDTO<PageResultDTO<MatchTrackVO>> queryMatchTrack(TradeQueryDTO queryDTO) {
 
+        Long total = 10000L;
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         page.setSearchCount(false);
-        Long total = tradeDao.queryMatchTrackByPageCount(queryDTO);
         IPage<MatchTrackVO> voList = tradeDao.queryMatchTrackByPage(page, queryDTO);
+        try {
+            total = tradeDao.queryMatchTrackByPageCount(queryDTO);
+        } catch (Exception e) {
+            log.error("", e);
+        }
         voList.setTotal(total);
         PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
@@ -107,10 +120,15 @@ public class TradeService {
      */
     public ResponseDTO<PageResultDTO<MatchTrackVO>> queryNozzleNoMatchTrack(TradeQueryDTO queryDTO) {
 
+        Long total = 10000L;
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
         page.setSearchCount(false);
-        Long total = tradeDao.queryNozzleNoMatchTrackByPageCount(queryDTO);
         IPage<MatchTrackVO> voList = tradeDao.queryNozzleNoMatchTrackByPage(page, queryDTO);
+        try {
+            total = tradeDao.queryNozzleNoMatchTrackByPageCount(queryDTO);
+        } catch (Exception e) {
+            log.error("", e);
+        }
         voList.setTotal(total);
         PageResultDTO<MatchTrackVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
@@ -136,9 +154,19 @@ public class TradeService {
      */
     public ResponseDTO<PageResultDTO<CarTrafficFlowVO>> queryCarTrafficFlowByPage(TradeQueryDTO queryDTO) {
 
+        Long total = 10000L;
         Page page = SmartPageUtil.convert2QueryPage(queryDTO);
+        page.setSearchCount(false);
+
         IPage<CarTrafficFlowVO> voList = tradeDao.queryCarTrafficFlowByPage(page, queryDTO);
 
+        try {
+            total = tradeDao.queryCarTrafficFlowByPageCount(queryDTO);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+
+        page.setTotal(total);
         PageResultDTO<CarTrafficFlowVO> pageResultDTO = SmartPageUtil.convert2PageResult(voList);
         return ResponseDTO.succData(pageResultDTO);
     }
@@ -176,17 +204,19 @@ public class TradeService {
         List<CarGrowthAnalyseBO> voListThisDay = new ArrayList<>();
         voListThisDay.addAll(tradeDao.queryGrowthAnalyse(queryDTO));
 
+        TradeQueryDTO monthQueryDTO = JSONObject.parseObject(JSONObject.toJSONString(queryDTO), TradeQueryDTO.class);
         Date startTimeMonth = DateUtils.addMonths(startTime, -1);
         Date endTimeMonth = DateUtils.addMonths(endTime, -1);
-        queryDTO.setStartTime(startTimeMonth); queryDTO.setEndTime(endTimeMonth);
+        monthQueryDTO.setStartTime(startTimeMonth); monthQueryDTO.setEndTime(endTimeMonth);
         List<CarGrowthAnalyseBO> voListMonthOnMonth = new ArrayList<>();
-        voListMonthOnMonth.addAll(tradeDao.queryGrowthAnalyse(queryDTO));
+        voListMonthOnMonth.addAll(tradeDao.queryGrowthAnalyse(monthQueryDTO));
 
+        TradeQueryDTO yearQueryDTO = JSONObject.parseObject(JSONObject.toJSONString(queryDTO), TradeQueryDTO.class);
         Date startTimeYear = DateUtils.addYears(startTime, -1);
         Date endTimeYear = DateUtils.addYears(endTime, -1);
-        queryDTO.setStartTime(startTimeYear); queryDTO.setEndTime(endTimeYear);
+        yearQueryDTO.setStartTime(startTimeYear); yearQueryDTO.setEndTime(endTimeYear);
         List<CarGrowthAnalyseBO> voListYearOnYear = new ArrayList<>();
-        voListYearOnYear.addAll(tradeDao.queryGrowthAnalyse(queryDTO));
+//        voListYearOnYear.addAll(tradeDao.queryGrowthAnalyse(yearQueryDTO));
 
         ArrayList resultVO = new ArrayList<CarGrowthAnalyseVO>();
 

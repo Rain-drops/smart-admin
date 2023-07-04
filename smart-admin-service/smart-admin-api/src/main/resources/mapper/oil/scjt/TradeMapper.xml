@@ -506,6 +506,51 @@
             length(t.carnumber) <![CDATA[>]]> 0
         </where>
     </select>
+    <select id="queryCarTraceByPageCount" resultType="java.lang.Long">
+        SELECT
+            count(1)
+        FROM
+        fullingdb.bus_tradelog t
+        RIGHT JOIN
+        fullingdb.bus_orderlog o
+        ON o.station_code = t.station_code AND o.nozzleno = t.nozzleno AND o.startread = t.startread AND o.endread = t.endread
+        <where>
+            <if test="queryDTO.startTime != null">
+                t.endtime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+            </if>
+            <if test="queryDTO.endTime != null">
+                t.endtime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+            </if>
+            <if test="queryDTO.startTime != null">
+                o.paytime <![CDATA[ >= ]]> #{queryDTO.startTime} AND
+            </if>
+            <if test="queryDTO.endTime != null">
+                o.paytime <![CDATA[ <= ]]> #{queryDTO.endTime} AND
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                t.station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%') AND
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                t.station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%') AND
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                t.station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%') AND
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                t.station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%') AND
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                t.station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%') AND
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                t.oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%') AND
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                t.carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%') AND
+            </if>
+            length(t.carnumber) <![CDATA[>]]> 0
+        </where>
+    </select>
 
     <!-- 车流走势 -->
     <select id="queryCarTrafficFlowByPage" resultMap="CarTrafficFlowVO">
@@ -560,12 +605,57 @@
         GROUP BY
             station_area_name, station_exp_name, station_exp_service_area, station_name, station_code
             <if test="queryDTO.chartRadioType == 1">
-                ,end_date
+                ,enddate
             </if>
             <if test="queryDTO.chartRadioType == 0">
                 ,left(carnumber,1)
             </if>
         ORDER BY endtime
+    </select>
+    <select id="queryCarTrafficFlowByPageCount" resultType="java.lang.Long">
+        SELECT
+            <if test="queryDTO.chartRadioType == 1">
+                COUNT(DISTINCT CONCAT(station_area_name,station_exp_name,station_exp_service_area,station_name,station_code,cast(endtime as date)))
+            </if>
+            <if test="queryDTO.chartRadioType == 0">
+                COUNT(DISTINCT CONCAT(station_area_name,station_exp_name,station_exp_service_area,station_name,station_code,left(carnumber,1)))
+            </if>
+            <if test="queryDTO.chartRadioType != 1 and queryDTO.chartRadioType != 0">
+                COUNT(DISTINCT CONCAT(station_area_name,station_exp_name,station_exp_service_area,station_name,station_code))
+            </if>
+        FROM fullingdb.bus_tradelog
+        <where>
+            <if test="queryDTO.startTime != null">
+                AND endtime <![CDATA[ >= ]]> #{queryDTO.startTime}
+            </if>
+            <if test="queryDTO.endTime != null">
+                AND endtime <![CDATA[ <= ]]> #{queryDTO.endTime}
+            </if>
+            <if test="queryDTO.stationAreaName != null and queryDTO.stationAreaName != ''">
+                AND station_area_name LIKE CONCAT('%', #{queryDTO.stationAreaName}, '%')
+            </if>
+            <if test="queryDTO.stationExpName != null and queryDTO.stationExpName != ''">
+                AND station_exp_name LIKE CONCAT('%', #{queryDTO.stationExpName}, '%')
+            </if>
+            <if test="queryDTO.stationExpServiceArea != null and queryDTO.stationExpServiceArea != ''">
+                AND station_exp_service_area LIKE CONCAT('%', #{queryDTO.stationExpServiceArea}, '%')
+            </if>
+            <if test="queryDTO.stationCode != null and queryDTO.stationCode != ''">
+                AND station_code LIKE CONCAT('%', #{queryDTO.stationCode}, '%')
+            </if>
+            <if test="queryDTO.stationName != null and queryDTO.stationName != ''">
+                AND station_name LIKE CONCAT('%', #{queryDTO.stationName}, '%')
+            </if>
+            <if test="queryDTO.carNumber != null and queryDTO.carNumber != ''">
+                AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
+            </if>
+            <if test="queryDTO.oilClass != null and queryDTO.oilClass != ''">
+                AND oilclass LIKE CONCAT('%', #{queryDTO.oilClass}, '%')
+            </if>
+            <if test="queryDTO.oilCode != null and queryDTO.oilCode != ''">
+                AND oilcode LIKE CONCAT('%', #{queryDTO.oilCode}, '%')
+            </if>
+        </where>
     </select>
 
     <select id="queryCarTrafficFlowChart" resultMap="CarTrafficFlowVO">
@@ -660,7 +750,7 @@
 
     <select id="queryGrowthAnalyse" resultMap="CarGrowthAnalyseBO">
         SELECT
-            cast(endtime as date) endtime, station_area_name,
+            enddate endtime, station_area_name,
             <if test="queryDTO.growthAnalyseStationType == 0">
                 station_exp_name, station_exp_service_area,
             </if>
@@ -694,7 +784,7 @@
                 AND carnumber LIKE CONCAT('%', #{queryDTO.carNumber}, '%')
             </if>
         GROUP BY
-            cast(endtime as date), station_area_name,
+            enddate, station_area_name,
             <if test="queryDTO.growthAnalyseStationType == 0">
                 station_exp_name, station_exp_service_area,
             </if>
